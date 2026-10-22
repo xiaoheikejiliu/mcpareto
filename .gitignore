@@ -7,3 +7,4 @@ venv/
 # 真实采集数据可能包含门店定位信息，默认不入库；仓库内保留 data/sample_menu.json 供演示
 data/menu.json
 .env
+.agent-runs/
