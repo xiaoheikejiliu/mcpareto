@@ -1,0 +1,117 @@
+{
+  "schema_version": 1,
+  "data_source": "sample",
+  "sample_note": "演示样本，取自公开报道中麦当劳中国官方 MCP 的实测数据（门店 1420227，2026-10-16）。仅 13 项，用于验证分析管线与页面效果；完整门店数据请运行 scripts/collect.py 自行采集。脂肪、碳水、钙三项在原报道中未给出，故留空而非估算。",
+  "collected_at": "2026-10-16T00:00:00+08:00",
+  "store": {
+    "code": "1420227",
+    "city": "深圳",
+    "address_query": "深圳北站"
+  },
+  "items": [
+    {
+      "item_code": "MC-JIPAI",
+      "name": "那么大鸡排（椒盐风味）",
+      "category": "小食",
+      "price_cents": 1500,
+      "tags": [],
+      "nutrition": {"energy_kcal": 385, "protein_g": 24, "fat_g": null, "carb_g": null, "sodium_mg": 996, "calcium_mg": null}
+    },
+    {
+      "item_code": "MC-DBL-CHEESE",
+      "name": "双层吉士汉堡",
+      "category": "汉堡",
+      "price_cents": 2650,
+      "tags": [],
+      "nutrition": {"energy_kcal": 429, "protein_g": 27, "fat_g": null, "carb_g": null, "sodium_mg": 1017, "calcium_mg": null}
+    },
+    {
+      "item_code": "MC-DBL-FISH",
+      "name": "双层深海鳕鱼堡",
+      "category": "汉堡",
+      "price_cents": 2800,
+      "tags": [],
+      "nutrition": {"energy_kcal": 485, "protein_g": 28, "fat_g": null, "carb_g": null, "sodium_mg": 917, "calcium_mg": null}
+    },
+    {
+      "item_code": "MC-BUSUZHIBA",
+      "name": "不素之霸双层牛堡",
+      "category": "汉堡",
+      "price_cents": 2950,
+      "tags": [],
+      "nutrition": {"energy_kcal": 493, "protein_g": 28, "fat_g": null, "carb_g": null, "sodium_mg": 1012, "calcium_mg": null}
+    },
+    {
+      "item_code": "MC-BIGMAC",
+      "name": "巨无霸",
+      "category": "汉堡",
+      "price_cents": 2900,
+      "tags": [],
+      "nutrition": {"energy_kcal": 513, "protein_g": 27, "fat_g": null, "carb_g": null, "sodium_mg": 961, "calcium_mg": null}
+    },
+    {
+      "item_code": "MC-SPICY-FILET",
+      "name": "麦辣鸡腿汉堡",
+      "category": "汉堡",
+      "price_cents": 2600,
+      "tags": [],
+      "nutrition": {"energy_kcal": 485, "protein_g": 24, "fat_g": null, "carb_g": null, "sodium_mg": 1208, "calcium_mg": null}
+    },
+    {
+      "item_code": "MC-BACON-VEGGIE",
+      "name": "培根蔬萃双层牛堡",
+      "category": "汉堡",
+      "price_cents": 2650,
+      "tags": [],
+      "nutrition": {"energy_kcal": 442, "protein_g": 24, "fat_g": null, "carb_g": null, "sodium_mg": 728, "calcium_mg": null}
+    },
+    {
+      "item_code": "MC-ANGUS-CHEESE",
+      "name": "芝士安格斯厚牛堡",
+      "category": "汉堡",
+      "price_cents": 3550,
+      "tags": [],
+      "nutrition": {"energy_kcal": 696, "protein_g": 32, "fat_g": null, "carb_g": null, "sodium_mg": 897, "calcium_mg": null}
+    },
+    {
+      "item_code": "MC-ANGUS-BACON",
+      "name": "培根安格斯厚牛堡",
+      "category": "汉堡",
+      "price_cents": 3900,
+      "tags": [],
+      "nutrition": {"energy_kcal": 707, "protein_g": 34, "fat_g": null, "carb_g": null, "sodium_mg": 1037, "calcium_mg": null}
+    },
+    {
+      "item_code": "MC-GRILLED",
+      "name": "板烧鸡腿堡",
+      "category": "汉堡",
+      "price_cents": 2700,
+      "tags": [],
+      "nutrition": {"energy_kcal": 391, "protein_g": 23, "fat_g": null, "carb_g": null, "sodium_mg": 1041, "calcium_mg": null}
+    },
+    {
+      "item_code": "MC-WINGS",
+      "name": "麦辣鸡翅",
+      "category": "小食",
+      "price_cents": 1550,
+      "tags": [],
+      "nutrition": {"energy_kcal": 224, "protein_g": 13, "fat_g": null, "carb_g": null, "sodium_mg": 537, "calcium_mg": null}
+    },
+    {
+      "item_code": "MC-MCCHICKEN",
+      "name": "麦香鸡",
+      "category": "汉堡",
+      "price_cents": 1950,
+      "tags": [],
+      "nutrition": {"energy_kcal": 369, "protein_g": 15, "fat_g": null, "carb_g": null, "sodium_mg": 731, "calcium_mg": null}
+    },
+    {
+      "item_code": "MC-FILET-O-FISH",
+      "name": "麦香鱼",
+      "category": "汉堡",
+      "price_cents": 2500,
+      "tags": [],
+      "nutrition": {"energy_kcal": 325, "protein_g": 16, "fat_g": null, "carb_g": null, "sodium_mg": 556, "calcium_mg": null}
+    }
+  ]
+}

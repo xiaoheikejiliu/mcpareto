@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>McPareto · 麦当劳菜单的帕累托前沿</title>
+<style>
+:root{
+  --bg:#F7F6F3; --card:#FFFFFF; --ink:#1C1C1A; --mid:#6E6B66; --faint:#9C9992;
+  --line:#E6E3DC; --red:#C8102E; --red-soft:#FBEAEC; --gold:#E8A100;
+  --radius:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  font-size:15px; line-height:1.6; padding:32px 20px 64px;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1080px;margin:0 auto}
+header{margin-bottom:20px}
+.brand{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+h1{font-size:26px;font-weight:600;letter-spacing:-0.02em}
+.brand span{font-size:13px;color:var(--faint);font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+.tagline{color:var(--mid);font-size:14px;margin-top:4px}
+
+.notice{
+  background:#FFF8E6;border:1px solid #F0DFAF;color:#7A5B00;
+  border-radius:10px;padding:10px 14px;font-size:13px;margin-bottom:18px;line-height:1.55;
+}
+.notice b{font-weight:600}
+
+.hero{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:24px 26px;margin-bottom:16px;
+  display:flex;gap:28px;align-items:center;flex-wrap:wrap;
+}
+.hero-num{display:flex;align-items:baseline;gap:6px}
+.hero-num strong{font-size:52px;font-weight:600;letter-spacing:-0.03em;color:var(--red);line-height:1}
+.hero-num em{font-size:22px;font-style:normal;color:var(--red);font-weight:500}
+.hero-copy{flex:1;min-width:260px}
+.hero-copy p{font-size:14px;color:var(--mid)}
+.hero-copy p+p{margin-top:6px;font-size:13px;color:var(--faint)}
+
+.tabs{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.tab{
+  background:var(--card);border:1px solid var(--line);border-radius:999px;
+  padding:8px 18px;font-size:14px;color:var(--mid);cursor:pointer;
+  font-family:inherit;transition:.15s;
+}
+.tab:hover{border-color:#CFCBC2;color:var(--ink)}
+.tab[aria-selected="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+.tab small{display:block;font-size:11px;opacity:.65;margin-top:-2px}
+
+.panel{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  overflow:hidden;margin-bottom:16px;
+}
+.panel-head{
+  padding:16px 22px;border-bottom:1px solid var(--line);
+  display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;
+}
+.panel-head h2{font-size:15px;font-weight:600}
+.panel-head p{font-size:12.5px;color:var(--faint)}
+.chart-box{padding:8px 12px 4px}
+svg{display:block;width:100%;height:auto}
+.axis-line{stroke:#DAD6CD;stroke-width:1}
+.grid-line{stroke:#EFECE6;stroke-width:1}
+.tick{fill:var(--faint);font-size:11px}
+.axis-title{fill:var(--mid);font-size:12px;font-weight:500}
+.pt-lose{fill:#FFFFFF;stroke:#B4B2A9;stroke-width:1.5;cursor:pointer;transition:.12s}
+.pt-lose:hover{stroke:var(--ink);r:6}
+.pt-front{fill:var(--red);stroke:#fff;stroke-width:2;cursor:pointer;transition:.12s}
+.pt-front:hover{r:8}
+.front-path{fill:none;stroke:var(--red);stroke-width:1.5;stroke-dasharray:4 3;opacity:.55}
+.legend{display:flex;gap:20px;padding:2px 22px 16px;font-size:12px;color:var(--faint);flex-wrap:wrap}
+.legend i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:middle}
+
+.detail{
+  border-top:1px solid var(--line);padding:16px 22px;background:#FCFBF9;
+  font-size:13.5px;display:none;
+}
+.detail.on{display:block}
+.detail h3{font-size:14px;font-weight:600;margin-bottom:8px}
+.detail .kv{display:flex;gap:18px;flex-wrap:wrap;color:var(--mid);margin-bottom:10px}
+.detail .kv b{color:var(--ink);font-weight:500}
+.beater{
+  display:flex;justify-content:space-between;gap:12px;padding:7px 0;
+  border-top:1px dashed var(--line);font-size:13px;
+}
+.beater:first-of-type{border-top:none}
+.beater span:last-child{color:var(--red);white-space:nowrap}
+
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{
+  text-align:left;font-weight:500;color:var(--faint);font-size:12px;
+  padding:10px 22px;border-bottom:1px solid var(--line);white-space:nowrap;
+}
+td{padding:11px 22px;border-bottom:1px solid #F2F0EA;vertical-align:top}
+tr:last-child td{border-bottom:none}
+tbody tr{cursor:pointer}
+tbody tr:hover{background:#FBFAF7}
+td.name{font-weight:500}
+td .who{color:var(--faint);font-size:12px;display:block;margin-top:2px}
+td.num{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;white-space:nowrap}
+.pill{
+  display:inline-block;background:var(--red-soft);color:var(--red);
+  border-radius:5px;padding:1px 7px;font-size:11.5px;font-weight:500;
+}
+.empty{padding:28px 22px;color:var(--faint);font-size:13.5px;text-align:center}
+
+footer{
+  margin-top:28px;padding-top:18px;border-top:1px solid var(--line);
+  font-size:12.5px;color:var(--faint);line-height:1.7;
+}
+footer b{color:var(--mid);font-weight:500}
+@media(max-width:640px){
+  body{padding:20px 14px 48px}
+  h1{font-size:22px}
+  .hero{padding:20px;gap:14px}
+  .hero-num strong{font-size:40px}
+  th,td{padding-left:14px;padding-right:14px}
+  .panel-head{padding:14px 16px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="brand">
+      <h1>McPareto</h1>
+      <span>帕累托前沿分析</span>
+    </div>
+    <p class="tagline">不推荐你吃什么。只算给你看，哪些选项在数学上已经没有存在的理由。</p>
+  </header>
+
+  <div class="notice" id="notice" hidden></div>
+
+  <section class="hero">
+    <div class="hero-num">
+      <strong id="ratio">—</strong><em>%</em>
+    </div>
+    <div class="hero-copy">
+      <p id="heroLine">正在计算…</p>
+      <p id="heroSub"></p>
+    </div>
+  </section>
+
+  <nav class="tabs" id="tabs" role="tablist"></nav>
+
+  <section class="panel">
+    <div class="panel-head">
+      <h2 id="chartTitle">分布图</h2>
+      <p id="chartNote"></p>
+    </div>
+    <div class="chart-box">
+      <svg id="chart" viewBox="0 0 880 500" role="img" aria-label="餐品分布的散点图"></svg>
+    </div>
+    <div class="legend">
+      <span><i style="background:#C8102E"></i>帕累托前沿，无法被替代</span>
+      <span><i style="background:#fff;border:1.5px solid #B4B2A9"></i>被支配，存在更优替代</span>
+    </div>
+    <div class="detail" id="detail"></div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head">
+      <h2>劣解清单</h2>
+      <p>按被替代后可省下的金额排序</p>
+    </div>
+    <table>
+      <thead>
+        <tr><th>餐品</th><th>价格</th><th>替代方案</th><th>可省</th></tr>
+      </thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </section>
+
+  <footer>
+    <p><b>怎么看这张图。</b>横轴是价格，纵轴是你选的收益。红点是帕累托前沿：没有任何其他餐品能在不比它贵的同时给得更多。灰点被支配：总存在另一个选项比它便宜（或不贵）且给得不少，所以理性决策者没有理由选它。</p>
+    <p id="sourceLine" style="margin-top:8px"></p>
+  </footer>
+
+</div>
+
+<script>
+const DATA = /*__PAYLOAD__*/null;
+
+const NS = "http://www.w3.org/2000/svg";
+const PAD = { l: 66, r: 26, t: 26, b: 52 };
+const W = 880, H = 500;
+const IW = W - PAD.l - PAD.r, IH = H - PAD.t - PAD.b;
+
+let current = Object.keys(DATA.perspectives)[0];
+
+function el(tag, attrs, text) {
+  const n = document.createElementNS(NS, tag);
+  for (const k in attrs) n.setAttribute(k, attrs[k]);
+  if (text != null) n.textContent = text;
+  return n;
+}
+
+function fmt(v, unit) {
+  if (v == null) return "—";
+  const n = Math.abs(v) >= 100 ? Math.round(v) : Math.round(v * 100) / 100;
+  return n + (unit || "");
+}
+
+function renderTabs() {
+  const box = document.getElementById("tabs");
+  box.innerHTML = "";
+  for (const key in DATA.perspectives) {
+    const p = DATA.perspectives[key];
+    const b = document.createElement("button");
+    b.className = "tab";
+    b.setAttribute("role", "tab");
+    b.setAttribute("aria-selected", key === current ? "true" : "false");
+    b.innerHTML = p.name + "<small>" + p.y.label + " 对 价格</small>";
+    b.onclick = () => { current = key; render(); };
+    box.appendChild(b);
+  }
+}
+
+function renderChart(p) {
+  const svg = document.getElementById("chart");
+  svg.innerHTML = "";
+  const pts = p.points;
+  if (!pts.length) return;
+
+  const xs = pts.map(d => d.x), ys = pts.map(d => d.y);
+  let xMin = Math.min(...xs), xMax = Math.max(...xs);
+  let yMin = Math.min(...ys), yMax = Math.max(...ys);
+  const xSpan = xMax - xMin || 1, ySpan = yMax - yMin || 1;
+  xMin -= xSpan * 0.08; xMax += xSpan * 0.08;
+  yMin -= ySpan * 0.12; yMax += ySpan * 0.12;
+
+  const sx = v => PAD.l + (v - xMin) / (xMax - xMin) * IW;
+  const sy = v => p.y.dir === "min"
+    ? PAD.t + (v - yMin) / (yMax - yMin) * IH
+    : PAD.t + (1 - (v - yMin) / (yMax - yMin)) * IH;
+
+  for (let i = 0; i <= 4; i++) {
+    const gy = PAD.t + i * IH / 4;
+    svg.appendChild(el("line", { x1: PAD.l, x2: W - PAD.r, y1: gy, y2: gy, class: "grid-line" }));
+    const val = p.y.dir === "min"
+      ? yMin + i * (yMax - yMin) / 4
+      : yMax - i * (yMax - yMin) / 4;
+    const t = el("text", { x: PAD.l - 10, y: gy + 4, "text-anchor": "end", class: "tick" });
+    t.textContent = fmt(val, "");
+    svg.appendChild(t);
+  }
+  for (let i = 0; i <= 5; i++) {
+    const gx = PAD.l + i * IW / 5;
+    svg.appendChild(el("line", { x1: gx, x2: gx, y1: PAD.t, y2: PAD.t + IH, class: "grid-line" }));
+    const val = xMin + i * (xMax - xMin) / 5;
+    const t = el("text", { x: gx, y: PAD.t + IH + 20, "text-anchor": "middle", class: "tick" });
+    t.textContent = fmt(val, "");
+    svg.appendChild(t);
+  }
+
+  svg.appendChild(el("line", { x1: PAD.l, x2: W - PAD.r, y1: PAD.t + IH, y2: PAD.t + IH, class: "axis-line" }));
+  svg.appendChild(el("line", { x1: PAD.l, x2: PAD.l, y1: PAD.t, y2: PAD.t + IH, class: "axis-line" }));
+
+  const xt = el("text", { x: PAD.l + IW / 2, y: H - 8, "text-anchor": "middle", class: "axis-title" });
+  xt.textContent = p.x.label + "（" + p.x.unit + "）";
+  svg.appendChild(xt);
+
+  const yt = el("text", {
+    x: 16, y: PAD.t + IH / 2, "text-anchor": "middle", class: "axis-title",
+    transform: "rotate(-90 16 " + (PAD.t + IH / 2) + ")"
+  });
+  yt.textContent = p.y.label + "（" + p.y.unit + "）" + (p.y.dir === "min" ? " · 越低越好" : " · 越高越好");
+  svg.appendChild(yt);
+
+  const front = pts.filter(d => d.isFront).sort((a, b) => a.x - b.x);
+  if (front.length > 1) {
+    let d = "M" + sx(front[0].x) + "," + sy(front[0].y);
+    for (let i = 1; i < front.length; i++) {
+      d += "H" + sx(front[i].x) + "V" + sy(front[i].y);
+    }
+    svg.appendChild(el("path", { d: d, class: "front-path" }));
+  }
+
+  for (const d of pts.filter(x => !x.isFront)) {
+    const c = el("circle", { cx: sx(d.x), cy: sy(d.y), r: 4.5, class: "pt-lose" });
+    c.onclick = () => showDetail(p, d);
+    const tt = el("title");
+    tt.textContent = d.name + " · ¥" + d.price + " · " + p.y.label + " " + fmt(d.y, p.y.unit);
+    c.appendChild(tt);
+    svg.appendChild(c);
+  }
+  for (const d of front) {
+    const c = el("circle", { cx: sx(d.x), cy: sy(d.y), r: 6.5, class: "pt-front" });
+    c.onclick = () => showDetail(p, d);
+    const tt = el("title");
+    tt.textContent = d.name + " · 前沿 · ¥" + d.price;
+    c.appendChild(tt);
+    svg.appendChild(c);
+  }
+}
+
+function showDetail(p, d) {
+  const box = document.getElementById("detail");
+  const beaters = (p.beaters[d.code] || []);
+  let html = "<h3>" + d.name + "</h3>";
+  html += '<div class="kv">'
+    + "<span>价格 <b>¥" + d.price + "</b></span>"
+    + "<span>" + p.y.label + " <b>" + fmt(d.y, p.y.unit) + "</b></span>"
+    + (d.protein != null ? "<span>蛋白质 <b>" + d.protein + " g</b></span>" : "")
+    + (d.sodium != null ? "<span>钠 <b>" + d.sodium + " mg</b></span>" : "")
+    + "</div>";
+
+  if (d.isFront) {
+    html += '<p style="color:var(--mid)">这个餐品在前沿上：没有任何其他选项能在不比它贵的同时给得更多。它和前沿上的其他餐品之间不存在数学上的高下，只看你更看重什么。</p>';
+  } else if (beaters.length) {
+    html += '<p style="color:var(--mid);margin-bottom:6px">碾压它的选项：</p>';
+    for (const b of beaters) {
+      const diff = d.price - b.price;
+      html += '<div class="beater"><span>' + b.name + '</span><span>'
+        + (diff > 0 ? "便宜 ¥" + diff.toFixed(2) : "同价") + "，同项不低</span></div>";
+    }
+  }
+  box.innerHTML = html;
+  box.classList.add("on");
+}
+
+function renderTable(p) {
+  const rows = document.getElementById("rows");
+  rows.innerHTML = "";
+  const lose = p.points.filter(d => !d.isFront).map(d => {
+    const bs = p.beaters[d.code] || [];
+    const best = bs.length ? bs.reduce((a, b) => (b.price < a.price ? b : a)) : null;
+    return { d, best, save: best ? d.price - best.price : 0 };
+  }).sort((a, b) => b.save - a.save || a.d.price - b.d.price);
+
+  if (!lose.length) {
+    rows.innerHTML = '<tr><td colspan="4" class="empty">这个视角下所有餐品都在前沿上。</td></tr>';
+    return;
+  }
+
+  for (const { d, best, save } of lose) {
+    const tr = document.createElement("tr");
+    tr.innerHTML = "<td class='name'>" + d.name
+      + "<span class='who'>" + d.cat + "</span></td>"
+      + "<td class='num'>¥" + d.price.toFixed(2) + "</td>"
+      + "<td class='name'>" + (best ? best.name : "—")
+      + "<span class='who'>" + (best ? "¥" + best.price.toFixed(2) : "") + "</span></td>"
+      + "<td class='num'>" + (save > 0.004
+        ? "<span class='pill'>省 " + save.toFixed(2) + "</span>"
+        : "同价") + "</td>";
+    tr.onclick = () => showDetail(p, d);
+    rows.appendChild(tr);
+  }
+}
+
+function render() {
+  const p = DATA.perspectives[current];
+  renderTabs();
+
+  document.getElementById("chartTitle").textContent = p.y.label + " 与价格的关系";
+  document.getElementById("chartNote").textContent = p.note;
+
+  const pct = Math.round(p.dominatedRatio * 100);
+  document.getElementById("ratio").textContent = pct;
+  document.getElementById("heroLine").textContent =
+    p.points.length + " 个可选餐品里，" + p.dominatedCount + " 个在任何偏好下都不该被选中";
+  document.getElementById("heroSub").textContent =
+    "这不是口味判断。只要存在另一个餐品比它便宜、给得还不少于它，它就被支配了。";
+
+  renderChart(p);
+  document.getElementById("detail").classList.remove("on");
+  renderTable(p);
+}
+
+function initMeta() {
+  const m = DATA.meta;
+  const store = m.store || {};
+  const src = document.getElementById("sourceLine");
+  const where = [store.city, store.code ? "门店 " + store.code : ""].filter(Boolean).join(" · ");
+  src.innerHTML = "<b>数据来源</b> " + (m.data_source === "sample"
+    ? "公开报道中的麦当劳中国官方 MCP 实测样本"
+    : "麦当劳中国官方 MCP（mcp.mcd.cn）")
+    + (where ? " · " + where : "")
+    + (m.collected_at ? " · 采集于 " + m.collected_at : "");
+
+  if (m.data_source === "sample") {
+    const n = document.getElementById("notice");
+    n.hidden = false;
+    n.innerHTML = "<b>当前是演示样本，共 " + m.count + " 项。</b>"
+      + (m.sample_note || "")
+      + " 页面上的全部计算均由本项目自身的帕累托引擎完成。";
+  }
+}
+
+initMeta();
+render();
+</script>
+</body>
+</html>
