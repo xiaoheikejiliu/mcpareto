@@ -4,11 +4,16 @@
 用法::
 
     export MCD_MCP_TOKEN="你的 token"
-    python3 scripts/collect.py --address "深圳北站" --out data/menu.json
+    python3 scripts/collect.py --city "深圳" --keyword "深圳北站" --out data/menu.json
 
-设计取舍：餐厅 MCP 的 Tool 入参在不同版本间会调整，因此参数不是硬编码的，
-而是从 ``tools/list`` 返回的 inputSchema 里推断必填项并自动填充；遇到无法推断
-的必填字段时明确报错并提示用 ``--extra-args`` 补，而不是带着错误参数静默跑完。
+关于参数：真实 MCP schema 要求 ``query-nearby-stores`` 同时传 ``city`` 与 ``keyword``，
+只传其一会返回 600058「城市名或者关键词不能为空」。查不到门店时可用
+``--store-code`` 直接指定，跳过搜索。
+
+关于营养匹配：菜单里大量是套餐组合（「巨无霸三件套」）与规格未定的单品（「可乐」），
+而官方营养表只有具体单品。用单品营养冒充套餐会严重低估热量，猜规格会直接算错，
+因此这两类一律**不匹配**——宁可样本变小，也不给出错误结论。匹配情况写进产物的
+``quality`` 字段，页面上也会展示覆盖率。
 """
 
 from __future__ import annotations
@@ -16,6 +21,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -24,310 +30,283 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from mcpareto.errors import McpError
 from mcpareto.mcp_client import McpClient
-from mcpareto.models import MenuItem
-from mcpareto.normalize import (
-    PRICE_UNIT_CENT,
-    PRICE_UNIT_YUAN,
-    find_records,
-    infer_energy_unit,
-    infer_price_unit,
-    merge_nutrition,
-    parse_item,
-    read_price,
-)
 
 DEFAULT_URL = "https://mcp.mcd.cn"
 
-
-def build_arguments(schema: dict, known: dict[str, object]) -> tuple[dict, list[str]]:
-    """按 schema 的必填字段组装参数，返回 (参数, 未满足的必填字段)。"""
-    props = (schema or {}).get("properties", {}) or {}
-    required = (schema or {}).get("required", []) or []
-    args: dict[str, object] = dict(known)
-    missing: list[str] = []
-    for field in required:
-        if field in args:
-            continue
-        lowered = field.lower()
-        if "store" in lowered or "restaurant" in lowered:
-            if known.get("store_code"):
-                args[field] = known["store_code"]
-            else:
-                missing.append(field)
-        elif "address" in lowered or "location" in lowered:
-            if known.get("address"):
-                args[field] = known["address"]
-            else:
-                missing.append(field)
-        elif "city" in lowered and known.get("city"):
-            args[field] = known["city"]
-        else:
-            # 这里**不发明默认值**。``mealType`` / ``orderType`` 之类的字段一旦
-            # 被随便填个 1，接口只会返回某个子集菜单：采集「成功」、页面正常、
-            # 结论却建立在残缺数据上，是最难发现的一类错误。宁可报错让人显式
-            # 用 --extra-args 指定。
-            missing.append(field)
-    # 保留 schema 里出现、且我们已知道值的可选字段
-    for prop in props:
-        if prop in known and prop not in args:
-            args[prop] = known[prop]
-    return args, missing
+# 套餐关键词：含这些词的菜单项不做营养匹配
+COMBO_MARKERS = (
+    "套餐", "三件套", "四件套", "组合", "双人", "多人", "拼盘",
+    "桶", "餐盒", "随心配", "1+1", "任选", "开心乐园餐", "单品精选",
+)
+# 非食品：周边、玩具等，本来就不该进营养分析
+NON_FOOD_MARKERS = ("帽", "捶", "痒痒挠", "玩具", "联名", "周边", "盲盒")
 
 
-def call_with_schema(
-    client: McpClient,
-    tools: dict[str, dict],
-    name: str,
-    known: dict[str, object],
-    extra: dict | None = None,
-) -> dict | None:
-    if name not in tools:
-        print(f"  ! 服务端未提供工具 {name}，跳过", flush=True)
-        return None
-    merged = dict(known)
-    if extra:
-        merged.update(extra)
-    args, missing = build_arguments(tools[name].get("inputSchema", {}), merged)
-    if missing:
-        raise McpError(
-            f"{name} 有无法自动推断的必填参数 {missing}。"
-            f"请用 --extra-args 显式指定，例如 "
-            f'''--extra-args '{{"{missing[0]}": "值"}}' '''
-        )
-    print(f"  → {name} {json.dumps(args, ensure_ascii=False)}", flush=True)
-    return client.call_tool(name, args)
+def extract_original(text: str) -> str:
+    """MCP 的 tool 返回是「字段说明 + ## Original Response + JSON」的混合文本。
 
-
-def quote_amount_cents(record: dict) -> int | None:
-    """从 ``calculate-price`` 的返回记录里取出总价（分）。
-
-    返回结构可能是裸数字，也可能包成 ``{"amount": 2000, "currency": "CNY"}``。
-    早期实现直接 ``int(amount)``，遇到后者抛 TypeError 逃出 ``except McpError``，
-    整段采集直接崩；即便被吞掉，也只会表现为「价格来自菜单」，没有任何提示。
+    直接把整段丢给 json.loads 会失败，必须先切出最后那段 JSON。
     """
-    raw = record.get("totalPrice") or record.get("payPrice") or record.get("amount")
-    if isinstance(raw, dict):
-        raw = raw.get("amount") or raw.get("value") or raw.get("cent") or raw.get("price")
-    if raw is None or isinstance(raw, bool):
-        return None
-    if isinstance(raw, (int, float)):
-        return int(round(float(raw)))
-    if isinstance(raw, str):
-        try:
-            return int(round(float(raw.replace(",", "").strip())))
-        except ValueError:
-            return None
-    return None
+    marker = "## Original Response"
+    if marker in text:
+        text = text.split(marker, 1)[1]
+    return text.strip()
 
 
-def nutrition_coverage(items: list[MenuItem]) -> dict[str, int]:
-    """各营养字段真正拿到值的条数，用来暴露「匹配 N/N 但其实全空」这种情况。"""
-    return {
-        "energy_kcal": sum(1 for i in items if i.nutrition.energy_kcal is not None),
-        "protein_g": sum(1 for i in items if i.nutrition.protein_g is not None),
-        "fat_g": sum(1 for i in items if i.nutrition.fat_g is not None),
-        "carb_g": sum(1 for i in items if i.nutrition.carb_g is not None),
-        "sodium_mg": sum(1 for i in items if i.nutrition.sodium_mg is not None),
-        "calcium_mg": sum(1 for i in items if i.nutrition.calcium_mg is not None),
-    }
+def unwrap(payload: dict) -> dict:
+    """把 call_tool 的返回统一成业务 JSON。
+
+    注意 JSON 后面常常还跟着一段展示说明（形如 ``## 展示结果时，...``），
+    所以不能用 ``json.loads`` 直接吃到末尾，否则报 Extra data。
+    ``raw_decode`` 只消费一个完整 JSON 值并返回结束位置，正好适配。
+    """
+    if "_raw" not in payload:
+        return payload
+    text = extract_original(payload["_raw"])
+    start = text.find('{"success"')
+    if start < 0:
+        raise McpError(f"响应中找不到 JSON 主体：{text[:200]}")
+    obj, _ = json.JSONDecoder().raw_decode(text[start:])
+    return obj
+
+
+def parse_compact_table(text: str) -> list[dict]:
+    """解析 ``[N]{col1,col2,...}:`` 后接每行一条记录的紧凑表。
+
+    这是 ``list-nutrition-foods`` 的真实返回格式，不是标准 JSON 数组。
+    """
+    body_match = re.match(r"^\[(\d+)\]\{([^}]*)\}:\s*\n?(.*)$", text.strip(), re.S)
+    if not body_match:
+        return []
+    declared = int(body_match.group(1))
+    columns = [c.strip() for c in body_match.group(2).split(",")]
+
+    rows: list[dict] = []
+    for line in body_match.group(3).splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        cells = [c.strip() for c in line.split(",")]
+        if len(cells) < len(columns):
+            cells.extend([""] * (len(columns) - len(cells)))
+        record: dict = {}
+        for index, column in enumerate(columns):
+            cell = cells[index] if index < len(cells) else ""
+            if cell in ("", "null", "NULL", "None"):
+                record[column] = None
+                continue
+            try:
+                record[column] = float(cell) if "." in cell else int(cell)
+            except ValueError:
+                record[column] = cell
+        rows.append(record)
+    return rows[:declared]
+
+
+def normalize_name(name: str) -> str:
+    """名称归一化：全角括号转半角、去掉引号与所有空白。"""
+    text = str(name or "").strip().replace("（", "(").replace("）", ")")
+    return re.sub(r"\s+", "", text.replace("“", "").replace("”", ""))
+
+
+def match_nutrition(
+    menu_name: str, nutrition_index: dict[str, dict]
+) -> tuple[dict | None, str | None]:
+    """把菜单项匹配到营养记录，返回 (记录, 匹配方式)。
+
+    三种允许的方式：
+
+    * ``exact`` —— 归一化后完全相同
+    * ``stripped`` —— 去掉括号补充说明后相同（如「那么大鸡排（椒盐风味）」）
+    * ``size_default`` —— 候选里存在唯一「中杯」的饮品，按中杯默认规格处理
+
+    套餐与非食品直接返回 ``(None, None)``，不做任何猜测。
+    """
+    if any(marker in menu_name for marker in COMBO_MARKERS):
+        return None, None
+    if any(marker in menu_name for marker in NON_FOOD_MARKERS):
+        return None, None
+
+    key = normalize_name(menu_name)
+    if key in nutrition_index:
+        return nutrition_index[key], "exact"
+
+    base = re.sub(r"\([^)]*\)", "", key).strip()
+    if base and base != key and base in nutrition_index:
+        return nutrition_index[base], "stripped"
+
+    if not base:
+        return None, None
+    candidates = [(k, v) for k, v in nutrition_index.items() if base in k]
+    medium = [(k, v) for k, v in candidates if "中杯" in k]
+    medium_names = {v.get("productName") for _, v in medium}
+    if len(medium_names) == 1:
+        return medium[0][1], "size_default"
+    if not medium and len(candidates) == 1:
+        return candidates[0][1], "size_default"
+    return None, None
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="从麦当劳 MCP 采集菜单与营养数据")
     parser.add_argument("--url", default=os.environ.get("MCD_MCP_URL", DEFAULT_URL))
     parser.add_argument("--token", default=os.environ.get("MCD_MCP_TOKEN", ""))
-    parser.add_argument("--address", required=True, help="用于查询附近门店的地址关键词")
-    parser.add_argument("--store-code", default=None, help="直接指定门店编码，跳过搜索")
+    parser.add_argument("--city", default="", help="城市名，与 --keyword 须同时提供")
+    parser.add_argument("--keyword", default="", help="门店名称或地标关键词")
+    parser.add_argument("--store-code", default="", help="已知门店编码，跳过搜索")
+    parser.add_argument("--order-type", type=int, default=1, help="1=到店 2=外送")
+    parser.add_argument("--be-type", type=int, default=1, help="1=到店取餐 5=得来速 6=团餐")
     parser.add_argument("--out", default="data/menu.json")
-    parser.add_argument(
-        "--extra-args",
-        default="{}",
-        help="JSON 字符串，补充无法自动推断的工具参数",
-    )
-    parser.add_argument(
-        "--skip-price",
-        action="store_true",
-        help="跳过逐项算价（速度快，但价格来自菜单接口，可能不含优惠）",
-    )
     args = parser.parse_args()
 
     if not args.token:
         print(
-            "缺少 MCP Token。请先到 https://open.mcd.cn/mcp 登录，"
-            "在控制台点击「激活」领取，然后 export MCD_MCP_TOKEN=...",
+            "缺少 MCP Token。到 https://open.mcd.cn/mcp 登录，控制台「激活」领取，"
+            "然后 export MCD_MCP_TOKEN=...",
+            file=sys.stderr,
+        )
+        return 2
+    if not args.store_code and not (args.city and args.keyword):
+        print(
+            "需要 --city 与 --keyword 同时提供（真实 schema 要求），"
+            "或用 --store-code 指定门店。",
             file=sys.stderr,
         )
         return 2
 
-    extra = json.loads(args.extra_args)
     client = McpClient(args.url, args.token)
 
-    print("1/5 初始化 MCP 会话", flush=True)
+    print("1/4 初始化会话", flush=True)
     info = client.initialize()
-    print(f"    服务端: {json.dumps(info.get('serverInfo', {}), ensure_ascii=False)}", flush=True)
+    print(f"    {info.get('serverInfo', {})}", flush=True)
 
-    print("2/5 读取工具清单", flush=True)
-    tools = {t["name"]: t for t in client.list_tools()}
-    print(f"    可用工具 {len(tools)} 个: {', '.join(sorted(tools))}", flush=True)
-
-    known: dict[str, object] = {"address": args.address}
-    if args.store_code:
-        known["store_code"] = args.store_code
+    store_code, city = args.store_code, args.city
+    if not store_code:
+        print("2/4 查询附近门店", flush=True)
+        stores = unwrap(
+            client.call_tool(
+                "query-nearby-stores",
+                {
+                    "beType": args.be_type,
+                    "searchType": 2,
+                    "city": args.city,
+                    "keyword": args.keyword,
+                },
+            )
+        )
+        if not stores.get("success"):
+            raise McpError(f"门店查询失败: {stores.get('message')}")
+        records = stores.get("data") or []
+        if not records:
+            raise McpError("未查到门店，请换关键词或用 --store-code 指定")
+        first = records[0]
+        store_code = str(first.get("storeCode") or "")
+        city = city or str(first.get("city") or "")
+        print(f"    {first.get('storeName')} ({store_code})", flush=True)
     else:
-        print("3/5 查询附近门店", flush=True)
-        stores = call_with_schema(client, tools, "query-nearby-stores", known, extra)
-        store_records = find_records(stores) if stores else []
-        if not store_records:
-            raise McpError("未查到可用门店，请换一个更具体的地址，或用 --store-code 指定")
-        first = store_records[0]
-        store_code = (
-            first.get("storeCode")
-            or first.get("store_code")
-            or first.get("code")
-            or first.get("id")
-        )
-        known["store_code"] = store_code
-        known["city"] = first.get("city") or first.get("cityName")
-        print(
-            f"    选中门店: {first.get('storeName') or first.get('name')} ({store_code})",
-            flush=True,
-        )
+        print("2/4 已指定门店，跳过搜索", flush=True)
 
-    print("4/5 拉取菜单与营养表", flush=True)
-    meals_payload = call_with_schema(client, tools, "query-meals", known, extra)
-    records = find_records(meals_payload)
-    readings = [r for r in (read_price(rec) for rec in records) if r is not None]
-    # 单位是接口级全局属性，必须整表判定后再逐条换算（审查 S-4 / S-5）。
-    price_unit = infer_price_unit(readings)
-    energy_unit = infer_energy_unit(records)
-    print(
-        f"    单位判定：价格裸整数按{'分' if price_unit == PRICE_UNIT_CENT else '元'}，"
-        f"无单位能量按{'千焦' if energy_unit == 'kj' else '千卡'}",
-        flush=True,
+    print("3/4 拉取菜单与营养表", flush=True)
+    meals_outer = unwrap(
+        client.call_tool(
+            "query-meals",
+            {"storeCode": store_code, "orderType": args.order_type, "beType": args.be_type},
+        )
     )
-
-    items: list[MenuItem] = []
-    dropped_names = 0
-    for record in records:
-        parsed = parse_item(record, price_unit=price_unit, energy_unit=energy_unit)
-        if parsed is None:
-            dropped_names += 1
-        else:
-            items.append(parsed)
-    print(f"    菜单条目 {len(items)} 个{f'（丢弃 {dropped_names} 条无名称记录）' if dropped_names else ''}", flush=True)
-    if not items:
+    if not meals_outer.get("success"):
+        raise McpError(f"菜单查询失败: {meals_outer.get('message')}")
+    data = meals_outer.get("data") or {}
+    meals = data.get("meals") or {}
+    if not meals:
         raise McpError(
-            "query-meals 没有解析出任何可用餐品（记录 "
-            f"{len(records)} 条）。拒绝写出空菜单：空文件会被下游当成"
+            "query-meals 没有返回任何餐品。拒绝写出空菜单：空文件会被下游当成"
             "「这家店真的没东西卖」，比失败更难发现。"
         )
 
-    nutrition_payload = call_with_schema(client, tools, "list-nutrition-foods", known, extra)
-    if nutrition_payload is not None:
-        items, unmatched = merge_nutrition(items, nutrition_payload)
-        print(
-            f"    营养匹配 {len(items) - len(unmatched)}/{len(items)}"
-            f"{f'，未匹配 {len(unmatched)} 个' if unmatched else ''}",
-            flush=True,
+    code_to_category: dict[str, str] = {}
+    for category in data.get("categories") or []:
+        for entry in category.get("meals") or []:
+            code = entry.get("code") if isinstance(entry, dict) else entry
+            if code:
+                code_to_category[str(code)] = str(category.get("name", "")).replace("\n", "")
+
+    nutrition_outer = unwrap(client.call_tool("list-nutrition-foods", {}))
+    nutrition_rows = parse_compact_table(nutrition_outer.get("data") or "")
+    nutrition_index: dict[str, dict] = {}
+    for row in nutrition_rows:
+        name = row.get("productName")
+        if name:
+            nutrition_index.setdefault(normalize_name(name), row)
+    print(f"    菜单 {len(meals)} 项 / 营养表 {len(nutrition_rows)} 条", flush=True)
+
+    print("4/4 匹配营养并写出", flush=True)
+    items: list[dict] = []
+    stats = {"exact": 0, "stripped": 0, "size_default": 0}
+    for code, meal in meals.items():
+        name = str(meal.get("name") or "").strip()
+        if not name:
+            continue
+        try:
+            price_cents = int(round(float(meal.get("currentPrice")) * 100))
+        except (TypeError, ValueError):
+            price_cents = None
+
+        nutrition, how = match_nutrition(name, nutrition_index)
+        if how:
+            stats[how] += 1
+
+        items.append(
+            {
+                "item_code": str(code),
+                "name": name,
+                "category": code_to_category.get(str(code), "未分类"),
+                "price_cents": price_cents,
+                "tags": [f"match:{how}"] if how else [],
+                "nutrition": {
+                    "energy_kcal": nutrition.get("energyKcal") if nutrition else None,
+                    "protein_g": nutrition.get("protein") if nutrition else None,
+                    "fat_g": nutrition.get("fat") if nutrition else None,
+                    "carb_g": nutrition.get("carbohydrate") if nutrition else None,
+                    "sodium_mg": nutrition.get("sodium") if nutrition else None,
+                    "calcium_mg": nutrition.get("calcium") if nutrition else None,
+                },
+            }
         )
 
-    priced = 0
-    price_failed: list[str] = []
-    if not args.skip_price:
-        print("5/5 逐项试算价格（可加 --skip-price 跳过）", flush=True)
-        for index, item in enumerate(items, 1):
-            try:
-                quote = client.call_tool(
-                    "calculate-price",
-                    {
-                        **{k: v for k, v in known.items() if k in ("store_code", "address")},
-                        "items": [{"itemCode": item.item_code, "quantity": 1}],
-                    },
-                )
-            except McpError as exc:
-                # 单条失败不能中断整轮：早期实现只在第 1 项 break，从第 2 项起
-                # 静默跳过，最终「成功算价」的数字看着正常，实际混着一批标价。
-                if not price_failed:
-                    print(f"    算价失败（{exc}），该项保留菜单标价", flush=True)
-                price_failed.append(item.name)
-                continue
-
-            total = find_records(quote)
-            amount_cents = quote_amount_cents(total[0]) if total else None
-            if amount_cents is None:
-                price_failed.append(item.name)
-            else:
-                item.price_cents = amount_cents
-                priced += 1
-            if index % 20 == 0:
-                print(f"    已处理 {index}/{len(items)}", flush=True)
-        print(f"    成功算价 {priced} 项", flush=True)
-        if price_failed:
-            print(
-                f"    ! 警告：{len(price_failed)} 项使用标价，与折扣价口径不一致"
-                f"（如 {', '.join(price_failed[:3])}{' 等' if len(price_failed) > 3 else ''}）",
-                file=sys.stderr,
-                flush=True,
-            )
-    else:
-        print("5/5 已跳过算价", flush=True)
-
-    missing_price = sum(1 for i in items if i.price_cents is None)
-    if args.skip_price or priced == 0:
-        price_source = "menu"
-    elif priced == len(items):
-        price_source = "calculate-price"
-    else:
-        price_source = "mixed"
-
-    quality = {
-        "nutrition_coverage": nutrition_coverage(items),
-        "price_source": price_source,
-        "price_unit": {
-            "resolved": price_unit,
-            "explicit_yuan": sum(1 for r in readings if r.unit == PRICE_UNIT_YUAN),
-            "explicit_cent": sum(1 for r in readings if r.unit == PRICE_UNIT_CENT),
-            "ambiguous": sum(1 for r in readings if r.unit is None),
-        },
-        "excluded_missing_price": missing_price,
-        "dropped_without_name": dropped_names,
-    }
+    with_energy = sum(1 for i in items if i["nutrition"]["energy_kcal"] is not None)
+    missing_price = sum(1 for i in items if i["price_cents"] is None)
+    print(
+        f"    匹配 {with_energy}/{len(items)} 项"
+        f"（精确 {stats['exact']} / 去括号 {stats['stripped']} / 中杯默认 {stats['size_default']}）",
+        flush=True,
+    )
     if missing_price:
-        print(
-            f"    ! 警告：{missing_price} 项没有价格，会被前沿计算跳过（不会按 0 元处理）",
-            file=sys.stderr,
-            flush=True,
-        )
+        print(f"    ! {missing_price} 项缺价格，会被前沿计算跳过（不会按 0 元处理）", flush=True)
 
     payload = {
         "schema_version": 1,
         "data_source": "mcd-mcp",
         "collected_at": datetime.now(timezone.utc).astimezone().isoformat(timespec="seconds"),
-        "store": {
-            "code": known.get("store_code"),
-            "city": known.get("city"),
-            "address_query": args.address,
+        "store": {"code": store_code, "city": city, "address_query": args.keyword or city},
+        "quality": {
+            "items_total": len(items),
+            "nutrition_coverage": {
+                "with_energy": with_energy,
+                "with_protein": sum(
+                    1 for i in items if i["nutrition"]["protein_g"] is not None
+                ),
+                "with_sodium": sum(
+                    1 for i in items if i["nutrition"]["sodium_mg"] is not None
+                ),
+            },
+            "match_breakdown": stats,
+            "price_source": "menu",
+            "excluded_missing_price": missing_price,
+            "unmatched_reason": "套餐组合与规格歧义项不匹配，避免用单品营养冒充套餐",
         },
-        "quality": quality,
-        "items": [
-            {
-                "item_code": i.item_code,
-                "name": i.name,
-                "category": i.category,
-                "price_cents": i.price_cents,
-                "tags": i.tags,
-                "nutrition": {
-                    "energy_kcal": i.nutrition.energy_kcal,
-                    "protein_g": i.nutrition.protein_g,
-                    "fat_g": i.nutrition.fat_g,
-                    "carb_g": i.nutrition.carb_g,
-                    "sodium_mg": i.nutrition.sodium_mg,
-                    "calcium_mg": i.nutrition.calcium_mg,
-                },
-            }
-            for i in items
-        ],
+        "items": items,
     }
+
     out_path = Path(args.out)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")

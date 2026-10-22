@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
   "data_source": "mcd-mcp",
-  "collected_at": "2026-10-22T17:55:18+08:00",
+  "collected_at": "2026-10-22T17:58:46+08:00",
   "store": {
     "code": "1420227",
     "city": "深圳",
-    "address_query": "深圳"
+    "address_query": "深圳北站"
   },
   "quality": {
     "items_total": 86,
@@ -21,7 +21,7 @@
     },
     "price_source": "menu",
     "excluded_missing_price": 0,
-    "unmatched_reason": "套餐组合与规格歧义项未匹配，避免用单品营养冒充套餐"
+    "unmatched_reason": "套餐组合与规格歧义项不匹配，避免用单品营养冒充套餐"
   },
   "items": [
     {

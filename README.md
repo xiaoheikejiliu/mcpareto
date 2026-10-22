@@ -34,7 +34,7 @@ open docs/index.html
 
 # 2. 换成你所在门店的真实数据
 export MCD_MCP_TOKEN="在 open.mcd.cn/mcp 控制台领取"
-python3 scripts/collect.py --address "深圳北站" --out data/menu.json
+python3 scripts/collect.py --city "深圳" --keyword "深圳北站" --out data/menu.json
 python3 scripts/build_web.py --data data/menu.json
 open docs/index.html
 ```
