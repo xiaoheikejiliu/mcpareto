@@ -4,7 +4,8 @@ __pycache__/
 .venv/
 venv/
 
-# 真实采集数据可能包含门店定位信息，默认不入库；仓库内保留 data/sample_menu.json 供演示
-data/menu.json
+# 真实采集数据入库：只含门店编码、城市与公开菜单价格营养，不含个人配送地址。
+# docs/index.html 已内联同一份数据，入库才能让他人用同一份数据复算结论。
+# 若采集时用了含个人住址的参数，请先确认没有写进 store 字段再提交。
 .env
 .agent-runs/

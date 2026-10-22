@@ -1,0 +1,1368 @@
+{
+  "schema_version": 1,
+  "data_source": "mcd-mcp",
+  "collected_at": "2026-10-22T17:55:18+08:00",
+  "store": {
+    "code": "1420227",
+    "city": "深圳",
+    "address_query": "深圳"
+  },
+  "quality": {
+    "items_total": 86,
+    "nutrition_coverage": {
+      "with_energy": 25,
+      "with_protein": 25,
+      "with_sodium": 25
+    },
+    "match_breakdown": {
+      "exact": 18,
+      "stripped": 2,
+      "size_default": 5
+    },
+    "price_source": "menu",
+    "excluded_missing_price": 0,
+    "unmatched_reason": "套餐组合与规格歧义项未匹配，避免用单品营养冒充套餐"
+  },
+  "items": [
+    {
+      "item_code": "9900005456",
+      "name": "麦辣鸡腿汉堡三件套",
+      "category": "鸡肉汉堡/卷",
+      "price_cents": 4900,
+      "tags": [],
+      "nutrition": {
+        "energy_kcal": null,
+        "protein_g": null,
+        "fat_g": null,
+        "carb_g": null,
+        "sodium_mg": null,
+        "calcium_mg": null
+      }
+    },
+    {
+      "item_code": "9900005413",
+      "name": "双层深海鳕鱼堡三件套",
+      "category": "巨无霸牛鱼肉堡",
+      "price_cents": 5350,
+      "tags": [],
+      "nutrition": {
+        "energy_kcal": null,
+        "protein_g": null,
+        "fat_g": null,
+        "carb_g": null,
+        "sodium_mg": null,
+        "calcium_mg": null
+      }
+    },
+    {
+      "item_code": "511781",
+      "name": "培根安格斯厚牛堡",
+      "category": "安格斯MAX厚牛堡",
+      "price_cents": 3900,
+      "tags": [
+        "match:exact"
+      ],
+      "nutrition": {
+        "energy_kcal": 707,
+        "protein_g": 34,
+        "fat_g": 44,
+        "carb_g": 43,
+        "sodium_mg": 1037,
+        "calcium_mg": 161
+      }
+    },
+    {
+      "item_code": "511782",
+      "name": "芝士安格斯厚牛堡",
+      "category": "安格斯MAX厚牛堡",
+      "price_cents": 3550,
+      "tags": [
+        "match:exact"
+      ],
+      "nutrition": {
+        "energy_kcal": 696,
+        "protein_g": 32,
+        "fat_g": 44,
+        "carb_g": 43,
+        "sodium_mg": 897,
+        "calcium_mg": 150
+      }
+    },
+    {
+      "item_code": "2430",
+      "name": "【美汁源】“黄金橙橙”",
+      "category": "饮品",
+      "price_cents": 1500,
+      "tags": [
+        "match:exact"
+      ],
+      "nutrition": {
+        "energy_kcal": 165,
+        "protein_g": 0,
+        "fat_g": 0,
+        "carb_g": 41,
+        "sodium_mg": 53,
+        "calcium_mg": 0
+      }
+    },
+    {
+      "item_code": "9900015730",
+      "name": "BFF四宫格小食盘",
+      "category": "小食拼盘/多人餐",
+      "price_cents": 6150,
+      "tags": [],
+      "nutrition": {
+        "energy_kcal": null,
+        "protein_g": null,
+        "fat_g": null,
+        "carb_g": null,
+        "sodium_mg": null,
+        "calcium_mg": null
+      }
+    },
+    {
+      "item_code": "521901",
+      "name": "月下相思扭扭薯",
+      "category": "小食甜品/其他",
+      "price_cents": 1600,
+      "tags": [],
+      "nutrition": {
+        "energy_kcal": null,
+        "protein_g": null,
+        "fat_g": null,
+        "carb_g": null,
+        "sodium_mg": null,
+        "calcium_mg": null
+      }
+    },
+    {
+      "item_code": "9900016078",
+      "name": "蘸酱麦麦脆汁鸡",
+      "category": "蘸酱炸鸡",
+      "price_cents": 1900,
+      "tags": [],
+      "nutrition": {
+        "energy_kcal": null,
+        "protein_g": null,
+        "fat_g": null,
+        "carb_g": null,
+        "sodium_mg": null,
+        "calcium_mg": null
+      }
+    },
+    {
+      "item_code": "9900016077",
+      "name": "蘸酱炸鸡",
+      "category": "人气热卖",
+      "price_cents": 1900,
+      "tags": [],
+      "nutrition": {
+        "energy_kcal": null,
+        "protein_g": null,
+        "fat_g": null,
+        "carb_g": null,
+        "sodium_mg": null,
+        "calcium_mg": null
+      }
+    },
+    {
+      "item_code": "521156",
+      "name": "那么大鸡排（椒盐风味）",
+      "category": "炸鸡",
+      "price_cents": 1500,
+      "tags": [
+        "match:stripped"
+      ],
+      "nutrition": {
+        "energy_kcal": 385,
+        "protein_g": 24,
+        "fat_g": 21,
+        "carb_g": 24,
+        "sodium_mg": 996,
+        "calcium_mg": 13
+      }
+    },
+    {
+      "item_code": "521750",
+      "name": "泷盐星星麦旋风",
+      "category": "小食甜品/其他",
+      "price_cents": 1750,
+      "tags": [],
+      "nutrition": {
+        "energy_kcal": null,
+        "protein_g": null,
+        "fat_g": null,
+        "carb_g": null,
+        "sodium_mg": null,
+        "calcium_mg": null
+      }
+    },
+    {
+      "item_code": "9900005460",
+      "name": "麦香鱼套餐",
+      "category": "巨无霸牛鱼肉堡",
+      "price_cents": 5050,
+      "tags": [],
+      "nutrition": {
+        "energy_kcal": null,
+        "protein_g": null,
+        "fat_g": null,
+        "carb_g": null,
+        "sodium_mg": null,
+        "calcium_mg": null
+      }
+    },
+    {
+      "item_code": "9900004835",
+      "name": "麦乐鸡套餐",
+      "category": "炸鸡",
+      "price_cents": 4050,
+      "tags": [],
+      "nutrition": {
+        "energy_kcal": null,
+        "protein_g": null,
+        "fat_g": null,
+        "carb_g": null,
+        "sodium_mg": null,
+        "calcium_mg": null
+      }
+    },
+    {
+      "item_code": "510488",
+      "name": "燕麦奶",
+      "category": "麦咖啡™",
+      "price_cents": 2500,
+      "tags": [],
+      "nutrition": {
+        "energy_kcal": null,
+        "protein_g": null,
+        "fat_g": null,
+        "carb_g": null,
+        "sodium_mg": null,
+        "calcium_mg": null
+      }
+    },
+    {
+      "item_code": "3755",
+      "name": "纯牛奶(盒装)",
+      "category": "饮品",
+      "price_cents": 1250,
+      "tags": [
+        "match:exact"
+      ],
+      "nutrition": {
+        "energy_kcal": 129,
+        "protein_g": 7,
+        "fat_g": 7,
+        "carb_g": 10,
+        "sodium_mg": 73,
+        "calcium_mg": 231
+      }
+    },
+    {
+      "item_code": "9900005464",
+      "name": "双层吉士汉堡套餐",
+      "category": "巨无霸牛鱼肉堡",
+      "price_cents": 5000,
+      "tags": [],
+      "nutrition": {
+        "energy_kcal": null,
+        "protein_g": null,
+        "fat_g": null,
+        "carb_g": null,
+        "sodium_mg": null,
+        "calcium_mg": null
+      }
+    },
+    {
+      "item_code": "4648",
+      "name": "不素之霸双层牛堡",
+      "category": "巨无霸牛鱼肉堡",
+      "price_cents": 2950,
+      "tags": [
+        "match:exact"
+      ],
+      "nutrition": {
+        "energy_kcal": 493,
+        "protein_g": 28,
+        "fat_g": 27,
+        "carb_g": 34,
+        "sodium_mg": 1012,
+        "calcium_mg": 75
+      }
+    },
+    {
+      "item_code": "9900005421",
+      "name": "鱼排堡开心乐园餐",
+      "category": "开心乐园",
+      "price_cents": 2900,
+      "tags": [],
+      "nutrition": {
+        "energy_kcal": null,
+        "protein_g": null,
+        "fat_g": null,
+        "carb_g": null,
+        "sodium_mg": null,
+        "calcium_mg": null
+      }
+    },
+    {
+      "item_code": "3757",
+      "name": "纯悦",
+      "category": "饮品",
+      "price_cents": 900,
+      "tags": [
+        "match:exact"
+      ],
+      "nutrition": {
+        "energy_kcal": 0,
+        "protein_g": 0,
+        "fat_g": 0,
+        "carb_g": 0,
+        "sodium_mg": 0,
+        "calcium_mg": 0
+      }
+    },
+    {
+      "item_code": "9900005466",
+      "name": "巨无霸三件套",
+      "category": "巨无霸牛鱼肉堡",
+      "price_cents": 5450,
+      "tags": [],
+      "nutrition": {
+        "energy_kcal": null,
+        "protein_g": null,
+        "fat_g": null,
+        "carb_g": null,
+        "sodium_mg": null,
+        "calcium_mg": null
+      }
+    },
+    {
+      "item_code": "9900003586",
+      "name": "双层深海鳕鱼堡",
+      "category": "巨无霸牛鱼肉堡",
+      "price_cents": 2800,
+      "tags": [
+        "match:exact"
+      ],
+      "nutrition": {
+        "energy_kcal": 485,
+        "protein_g": 28,
+        "fat_g": 21,
+        "carb_g": 46,
+        "sodium_mg": 917,
+        "calcium_mg": 147
+      }
+    },
+    {
+      "item_code": "9900005422",
+      "name": "汉堡开心乐园餐",
+      "category": "开心乐园",
+      "price_cents": 2550,
+      "tags": [],
+      "nutrition": {
+        "energy_kcal": null,
+        "protein_g": null,
+        "fat_g": null,
+        "carb_g": null,
+        "sodium_mg": null,
+        "calcium_mg": null
+      }
+    },
+    {
+      "item_code": "521914",
+      "name": "“葱不求人“按摩捶痒痒挠",
+      "category": "小食甜品/其他",
+      "price_cents": 1490,
+      "tags": [],
+      "nutrition": {
+        "energy_kcal": null,
+        "protein_g": null,
+        "fat_g": null,
+        "carb_g": null,
+        "sodium_mg": null,
+        "calcium_mg": null
+      }
+    },
+    {
+      "item_code": "6362",
+      "name": "100% 苹果汁(盒装)",
+      "category": "饮品",
+      "price_cents": 1250,
+      "tags": [
+        "match:stripped"
+      ],
+      "nutrition": {
+        "energy_kcal": 88,
+        "protein_g": 0,
+        "fat_g": 0,
+        "carb_g": 21,
+        "sodium_mg": 0,
+        "calcium_mg": 0
+      }
+    },
+    {
+      "item_code": "521717",
+      "name": "椰奶雪冰",
+      "category": "麦咖啡™",
+      "price_cents": 2700,
+      "tags": [],
+      "nutrition": {
+        "energy_kcal": null,
+        "protein_g": null,
+        "fat_g": null,
+        "carb_g": null,
+        "sodium_mg": null,
+        "calcium_mg": null
+      }
+    },
+    {
+      "item_code": "9900015729",
+      "name": "蘸酱BFF四宫格小食盘",
+      "category": "蘸酱炸鸡",
+      "price_cents": 6450,
+      "tags": [],
+      "nutrition": {
+        "energy_kcal": null,
+        "protein_g": null,
+        "fat_g": null,
+        "carb_g": null,
+        "sodium_mg": null,
+        "calcium_mg": null
+      }
+    },
+    {
+      "item_code": "521950",
+      "name": "蓝莓爆爆珠麦旋风",
+      "category": "小食甜品/其他",
+      "price_cents": 1750,
+      "tags": [],
+      "nutrition": {
+        "energy_kcal": null,
+        "protein_g": null,
+        "fat_g": null,
+        "carb_g": null,
+        "sodium_mg": null,
+        "calcium_mg": null
+      }
+    },
+    {
+      "item_code": "521797",
+      "name": "北美招牌牧场酱",
+      "category": "炸鸡",
+      "price_cents": 300,
+      "tags": [],
+      "nutrition": {
+        "energy_kcal": null,
+        "protein_g": null,
+        "fat_g": null,
+        "carb_g": null,
+        "sodium_mg": null,
+        "calcium_mg": null
+      }
+    },
+    {
+      "item_code": "521951",
+      "name": "灰焰圆筒",
+      "category": "小食甜品/其他",
+      "price_cents": 500,
+      "tags": [],
+      "nutrition": {
+        "energy_kcal": null,
+        "protein_g": null,
+        "fat_g": null,
+        "carb_g": null,
+        "sodium_mg": null,
+        "calcium_mg": null
+      }
+    },
+    {
+      "item_code": "9900011126",
+      "name": "酥脆无双套餐",
+      "category": "500大卡套餐",
+      "price_cents": 3100,
+      "tags": [],
+      "nutrition": {
+        "energy_kcal": null,
+        "protein_g": null,
+        "fat_g": null,
+        "carb_g": null,
+        "sodium_mg": null,
+        "calcium_mg": null
+      }
+    },
+    {
+      "item_code": "521954",
+      "name": "麦当劳联名复古棒球帽",
+      "category": "小食甜品/其他",
+      "price_cents": 3990,
+      "tags": [],
+      "nutrition": {
+        "energy_kcal": null,
+        "protein_g": null,
+        "fat_g": null,
+        "carb_g": null,
+        "sodium_mg": null,
+        "calcium_mg": null
+      }
+    },
+    {
+      "item_code": "9900011121",
+      "name": "“苹”水相“鱼”套餐",
+      "category": "500大卡套餐",
+      "price_cents": 5550,
+      "tags": [],
+      "nutrition": {
+        "energy_kcal": null,
+        "protein_g": null,
+        "fat_g": null,
+        "carb_g": null,
+        "sodium_mg": null,
+        "calcium_mg": null
+      }
+    },
+    {
+      "item_code": "1106",
+      "name": "培根蔬萃双层牛堡",
+      "category": "巨无霸牛鱼肉堡",
+      "price_cents": 2650,
+      "tags": [
+        "match:exact"
+      ],
+      "nutrition": {
+        "energy_kcal": 442,
+        "protein_g": 24,
+        "fat_g": 23,
+        "carb_g": 34,
+        "sodium_mg": 728,
+        "calcium_mg": 73
+      }
+    },
+    {
+      "item_code": "1700",
+      "name": "麦辣鸡翅",
+      "category": "炸鸡",
+      "price_cents": 1550,
+      "tags": [
+        "match:size_default"
+      ],
+      "nutrition": {
+        "energy_kcal": 224,
+        "protein_g": 13,
+        "fat_g": 15,
+        "carb_g": 9,
+        "sodium_mg": 537,
+        "calcium_mg": 13
+      }
+    },
+    {
+      "item_code": "1100",
+      "name": "巨无霸",
+      "category": "巨无霸牛鱼肉堡",
+      "price_cents": 2900,
+      "tags": [
+        "match:exact"
+      ],
+      "nutrition": {
+        "energy_kcal": 513,
+        "protein_g": 27,
+        "fat_g": 26,
+        "carb_g": 42,
+        "sodium_mg": 961,
+        "calcium_mg": 171
+      }
+    },
+    {
+      "item_code": "9900005451",
+      "name": "麦辣鸡翅4块套餐",
+      "category": "炸鸡",
+      "price_cents": 5500,
+      "tags": [],
+      "nutrition": {
+        "energy_kcal": null,
+        "protein_g": null,
+        "fat_g": null,
+        "carb_g": null,
+        "sodium_mg": null,
+        "calcium_mg": null
+      }
+    },
+    {
+      "item_code": "4810",
+      "name": "薯条",
+      "category": "小食甜品/其他",
+      "price_cents": 1450,
+      "tags": [],
+      "nutrition": {
+        "energy_kcal": null,
+        "protein_g": null,
+        "fat_g": null,
+        "carb_g": null,
+        "sodium_mg": null,
+        "calcium_mg": null
+      }
+    },
+    {
+      "item_code": "510479",
+      "name": "燕麦奶铁",
+      "category": "麦咖啡™",
+      "price_cents": 2700,
+      "tags": [],
+      "nutrition": {
+        "energy_kcal": null,
+        "protein_g": null,
+        "fat_g": null,
+        "carb_g": null,
+        "sodium_mg": null,
+        "calcium_mg": null
+      }
+    },
+    {
+      "item_code": "9900005453",
+      "name": "麦香鸡套餐",
+      "category": "鸡肉汉堡/卷",
+      "price_cents": 4500,
+      "tags": [],
+      "nutrition": {
+        "energy_kcal": null,
+        "protein_g": null,
+        "fat_g": null,
+        "carb_g": null,
+        "sodium_mg": null,
+        "calcium_mg": null
+      }
+    },
+    {
+      "item_code": "507394",
+      "name": "牛奶",
+      "category": "麦咖啡™",
+      "price_cents": 2300,
+      "tags": [],
+      "nutrition": {
+        "energy_kcal": null,
+        "protein_g": null,
+        "fat_g": null,
+        "carb_g": null,
+        "sodium_mg": null,
+        "calcium_mg": null
+      }
+    },
+    {
+      "item_code": "9900005411",
+      "name": "不素之霸双层牛堡三件套",
+      "category": "巨无霸牛鱼肉堡",
+      "price_cents": 5500,
+      "tags": [],
+      "nutrition": {
+        "energy_kcal": null,
+        "protein_g": null,
+        "fat_g": null,
+        "carb_g": null,
+        "sodium_mg": null,
+        "calcium_mg": null
+      }
+    },
+    {
+      "item_code": "9900008746",
+      "name": "鸡肉堡单品精选",
+      "category": "鸡肉汉堡/卷",
+      "price_cents": 2700,
+      "tags": [],
+      "nutrition": {
+        "energy_kcal": null,
+        "protein_g": null,
+        "fat_g": null,
+        "carb_g": null,
+        "sodium_mg": null,
+        "calcium_mg": null
+      }
+    },
+    {
+      "item_code": "3060",
+      "name": "雪碧",
+      "category": "饮品",
+      "price_cents": 1150,
+      "tags": [
+        "match:size_default"
+      ],
+      "nutrition": {
+        "energy_kcal": 105,
+        "protein_g": 0,
+        "fat_g": 0,
+        "carb_g": 26,
+        "sodium_mg": 29,
+        "calcium_mg": 0
+      }
+    },
+    {
+      "item_code": "9900008745",
+      "name": "新地",
+      "category": "小食甜品/其他",
+      "price_cents": 1450,
+      "tags": [],
+      "nutrition": {
+        "energy_kcal": null,
+        "protein_g": null,
+        "fat_g": null,
+        "carb_g": null,
+        "sodium_mg": null,
+        "calcium_mg": null
+      }
+    },
+    {
+      "item_code": "9900004066",
+      "name": "堡堡随心拼（7件任选）",
+      "category": "小食拼盘/多人餐",
+      "price_cents": 8500,
+      "tags": [],
+      "nutrition": {
+        "energy_kcal": null,
+        "protein_g": null,
+        "fat_g": null,
+        "carb_g": null,
+        "sodium_mg": null,
+        "calcium_mg": null
+      }
+    },
+    {
+      "item_code": "9900008747",
+      "name": "牛肉堡单品精选",
+      "category": "巨无霸牛鱼肉堡",
+      "price_cents": 1550,
+      "tags": [],
+      "nutrition": {
+        "energy_kcal": null,
+        "protein_g": null,
+        "fat_g": null,
+        "carb_g": null,
+        "sodium_mg": null,
+        "calcium_mg": null
+      }
+    },
+    {
+      "item_code": "515520",
+      "name": "怡泉+C",
+      "category": "饮品",
+      "price_cents": 1350,
+      "tags": [
+        "match:size_default"
+      ],
+      "nutrition": {
+        "energy_kcal": 110,
+        "protein_g": 0,
+        "fat_g": 0,
+        "carb_g": 27,
+        "sodium_mg": 0,
+        "calcium_mg": 0
+      }
+    },
+    {
+      "item_code": "1440",
+      "name": "麦辣鸡腿汉堡",
+      "category": "鸡肉汉堡/卷",
+      "price_cents": 2600,
+      "tags": [
+        "match:exact"
+      ],
+      "nutrition": {
+        "energy_kcal": 485,
+        "protein_g": 24,
+        "fat_g": 24,
+        "carb_g": 42,
+        "sodium_mg": 1208,
+        "calcium_mg": 154
+      }
+    },
+    {
+      "item_code": "1120",
+      "name": "双层吉士汉堡",
+      "category": "巨无霸牛鱼肉堡",
+      "price_cents": 2650,
+      "tags": [
+        "match:exact"
+      ],
+      "nutrition": {
+        "energy_kcal": 429,
+        "protein_g": 27,
+        "fat_g": 22,
+        "carb_g": 31,
+        "sodium_mg": 1017,
+        "calcium_mg": 232
+      }
+    },
+    {
+      "item_code": "9900013732",
+      "name": "经典麦旋风",
+      "category": "小食甜品/其他",
+      "price_cents": 1650,
+      "tags": [],
+      "nutrition": {
+        "energy_kcal": null,
+        "protein_g": null,
+        "fat_g": null,
+        "carb_g": null,
+        "sodium_mg": null,
+        "calcium_mg": null
+      }
+    },
+    {
+      "item_code": "515282",
+      "name": "阳光柠檬红茶",
+      "category": "饮品",
+      "price_cents": 1350,
+      "tags": [
+        "match:size_default"
+      ],
+      "nutrition": {
+        "energy_kcal": 117,
+        "protein_g": 0,
+        "fat_g": 0,
+        "carb_g": 29,
+        "sodium_mg": 17,
+        "calcium_mg": 0
+      }
+    },
+    {
+      "item_code": "9900016058",
+      "name": "鱼排堡开心乐园餐",
+      "category": "开心乐园",
+      "price_cents": 2900,
+      "tags": [],
+      "nutrition": {
+        "energy_kcal": null,
+        "protein_g": null,
+        "fat_g": null,
+        "carb_g": null,
+        "sodium_mg": null,
+        "calcium_mg": null
+      }
+    },
+    {
+      "item_code": "9900016056",
+      "name": "麦乐鸡开心乐园餐",
+      "category": "开心乐园",
+      "price_cents": 2700,
+      "tags": [],
+      "nutrition": {
+        "energy_kcal": null,
+        "protein_g": null,
+        "fat_g": null,
+        "carb_g": null,
+        "sodium_mg": null,
+        "calcium_mg": null
+      }
+    },
+    {
+      "item_code": "9900016057",
+      "name": "汉堡开心乐园餐",
+      "category": "开心乐园",
+      "price_cents": 2550,
+      "tags": [],
+      "nutrition": {
+        "energy_kcal": null,
+        "protein_g": null,
+        "fat_g": null,
+        "carb_g": null,
+        "sodium_mg": null,
+        "calcium_mg": null
+      }
+    },
+    {
+      "item_code": "9900016055",
+      "name": "开心亲子双人餐",
+      "category": "开心乐园",
+      "price_cents": 7850,
+      "tags": [],
+      "nutrition": {
+        "energy_kcal": null,
+        "protein_g": null,
+        "fat_g": null,
+        "carb_g": null,
+        "sodium_mg": null,
+        "calcium_mg": null
+      }
+    },
+    {
+      "item_code": "9900009242",
+      "name": "“苹板”支撑Pro套餐",
+      "category": "500大卡套餐",
+      "price_cents": 5800,
+      "tags": [],
+      "nutrition": {
+        "energy_kcal": null,
+        "protein_g": null,
+        "fat_g": null,
+        "carb_g": null,
+        "sodium_mg": null,
+        "calcium_mg": null
+      }
+    },
+    {
+      "item_code": "9900009245",
+      "name": "牛气满满套餐",
+      "category": "500大卡套餐",
+      "price_cents": 5200,
+      "tags": [],
+      "nutrition": {
+        "energy_kcal": null,
+        "protein_g": null,
+        "fat_g": null,
+        "carb_g": null,
+        "sodium_mg": null,
+        "calcium_mg": null
+      }
+    },
+    {
+      "item_code": "507387",
+      "name": "卡布奇诺",
+      "category": "麦咖啡™",
+      "price_cents": 2500,
+      "tags": [
+        "match:size_default"
+      ],
+      "nutrition": {
+        "energy_kcal": 167,
+        "protein_g": 9,
+        "fat_g": 7,
+        "carb_g": 15,
+        "sodium_mg": 88,
+        "calcium_mg": 285
+      }
+    },
+    {
+      "item_code": "9900008751",
+      "name": "可乐",
+      "category": "饮品",
+      "price_cents": 1150,
+      "tags": [],
+      "nutrition": {
+        "energy_kcal": null,
+        "protein_g": null,
+        "fat_g": null,
+        "carb_g": null,
+        "sodium_mg": null,
+        "calcium_mg": null
+      }
+    },
+    {
+      "item_code": "9900006332",
+      "name": "薄皮V翅双拼十翅",
+      "category": "小食拼盘/多人餐",
+      "price_cents": 6100,
+      "tags": [],
+      "nutrition": {
+        "energy_kcal": null,
+        "protein_g": null,
+        "fat_g": null,
+        "carb_g": null,
+        "sodium_mg": null,
+        "calcium_mg": null
+      }
+    },
+    {
+      "item_code": "515955",
+      "name": "浓浓燕麦黑巧（冰/热）",
+      "category": "麦咖啡™",
+      "price_cents": 2700,
+      "tags": [],
+      "nutrition": {
+        "energy_kcal": null,
+        "protein_g": null,
+        "fat_g": null,
+        "carb_g": null,
+        "sodium_mg": null,
+        "calcium_mg": null
+      }
+    },
+    {
+      "item_code": "9900008752",
+      "name": "派",
+      "category": "小食甜品/其他",
+      "price_cents": 950,
+      "tags": [],
+      "nutrition": {
+        "energy_kcal": null,
+        "protein_g": null,
+        "fat_g": null,
+        "carb_g": null,
+        "sodium_mg": null,
+        "calcium_mg": null
+      }
+    },
+    {
+      "item_code": "515837",
+      "name": "圆筒冰淇淋",
+      "category": "小食甜品/其他",
+      "price_cents": 500,
+      "tags": [
+        "match:exact"
+      ],
+      "nutrition": {
+        "energy_kcal": 93,
+        "protein_g": 2,
+        "fat_g": 3,
+        "carb_g": 14,
+        "sodium_mg": 36,
+        "calcium_mg": 77
+      }
+    },
+    {
+      "item_code": "9900005423",
+      "name": "麦乐鸡开心乐园餐",
+      "category": "开心乐园",
+      "price_cents": 2700,
+      "tags": [],
+      "nutrition": {
+        "energy_kcal": null,
+        "protein_g": null,
+        "fat_g": null,
+        "carb_g": null,
+        "sodium_mg": null,
+        "calcium_mg": null
+      }
+    },
+    {
+      "item_code": "9900003067",
+      "name": "麦香鱼四件套",
+      "category": "巨无霸牛鱼肉堡",
+      "price_cents": 6600,
+      "tags": [],
+      "nutrition": {
+        "energy_kcal": null,
+        "protein_g": null,
+        "fat_g": null,
+        "carb_g": null,
+        "sodium_mg": null,
+        "calcium_mg": null
+      }
+    },
+    {
+      "item_code": "9900005468",
+      "name": "培根蔬萃双层牛堡三件套",
+      "category": "巨无霸牛鱼肉堡",
+      "price_cents": 5200,
+      "tags": [],
+      "nutrition": {
+        "energy_kcal": null,
+        "protein_g": null,
+        "fat_g": null,
+        "carb_g": null,
+        "sodium_mg": null,
+        "calcium_mg": null
+      }
+    },
+    {
+      "item_code": "9900003066",
+      "name": "巨无霸四件套",
+      "category": "巨无霸牛鱼肉堡",
+      "price_cents": 6950,
+      "tags": [],
+      "nutrition": {
+        "energy_kcal": null,
+        "protein_g": null,
+        "fat_g": null,
+        "carb_g": null,
+        "sodium_mg": null,
+        "calcium_mg": null
+      }
+    },
+    {
+      "item_code": "514782",
+      "name": "脆脆薯条",
+      "category": "小食甜品/其他",
+      "price_cents": 1700,
+      "tags": [
+        "match:exact"
+      ],
+      "nutrition": {
+        "energy_kcal": 279,
+        "protein_g": 4,
+        "fat_g": 14,
+        "carb_g": 32,
+        "sodium_mg": 540,
+        "calcium_mg": 13
+      }
+    },
+    {
+      "item_code": "9900003065",
+      "name": "麦辣鸡腿堡四件套",
+      "category": "鸡肉汉堡/卷",
+      "price_cents": 6450,
+      "tags": [],
+      "nutrition": {
+        "energy_kcal": null,
+        "protein_g": null,
+        "fat_g": null,
+        "carb_g": null,
+        "sodium_mg": null,
+        "calcium_mg": null
+      }
+    },
+    {
+      "item_code": "9900003064",
+      "name": "麦辣小食餐",
+      "category": "鸡肉汉堡/卷",
+      "price_cents": 6450,
+      "tags": [],
+      "nutrition": {
+        "energy_kcal": null,
+        "protein_g": null,
+        "fat_g": null,
+        "carb_g": null,
+        "sodium_mg": null,
+        "calcium_mg": null
+      }
+    },
+    {
+      "item_code": "6102",
+      "name": "苹果片",
+      "category": "小食甜品/其他",
+      "price_cents": 750,
+      "tags": [
+        "match:exact"
+      ],
+      "nutrition": {
+        "energy_kcal": 32,
+        "protein_g": 0,
+        "fat_g": 0,
+        "carb_g": 7,
+        "sodium_mg": 0,
+        "calcium_mg": 18
+      }
+    },
+    {
+      "item_code": "9900003063",
+      "name": "板烧鸡腿堡四件套",
+      "category": "鸡肉汉堡/卷",
+      "price_cents": 6700,
+      "tags": [],
+      "nutrition": {
+        "energy_kcal": null,
+        "protein_g": null,
+        "fat_g": null,
+        "carb_g": null,
+        "sodium_mg": null,
+        "calcium_mg": null
+      }
+    },
+    {
+      "item_code": "9900005428",
+      "name": "培根安格斯厚牛堡三件套",
+      "category": "安格斯MAX厚牛堡",
+      "price_cents": 6350,
+      "tags": [],
+      "nutrition": {
+        "energy_kcal": null,
+        "protein_g": null,
+        "fat_g": null,
+        "carb_g": null,
+        "sodium_mg": null,
+        "calcium_mg": null
+      }
+    },
+    {
+      "item_code": "9900003062",
+      "name": "板烧小食餐",
+      "category": "鸡肉汉堡/卷",
+      "price_cents": 6450,
+      "tags": [],
+      "nutrition": {
+        "energy_kcal": null,
+        "protein_g": null,
+        "fat_g": null,
+        "carb_g": null,
+        "sodium_mg": null,
+        "calcium_mg": null
+      }
+    },
+    {
+      "item_code": "1450",
+      "name": "麦香鸡",
+      "category": "鸡肉汉堡/卷",
+      "price_cents": 1950,
+      "tags": [
+        "match:exact"
+      ],
+      "nutrition": {
+        "energy_kcal": 369,
+        "protein_g": 15,
+        "fat_g": 17,
+        "carb_g": 39,
+        "sodium_mg": 731,
+        "calcium_mg": 73
+      }
+    },
+    {
+      "item_code": "520688",
+      "name": "鲜萃咖啡",
+      "category": "饮品",
+      "price_cents": 1300,
+      "tags": [],
+      "nutrition": {
+        "energy_kcal": null,
+        "protein_g": null,
+        "fat_g": null,
+        "carb_g": null,
+        "sodium_mg": null,
+        "calcium_mg": null
+      }
+    },
+    {
+      "item_code": "507409",
+      "name": "麦咖啡™奶铁",
+      "category": "麦咖啡™",
+      "price_cents": 2500,
+      "tags": [],
+      "nutrition": {
+        "energy_kcal": null,
+        "protein_g": null,
+        "fat_g": null,
+        "carb_g": null,
+        "sodium_mg": null,
+        "calcium_mg": null
+      }
+    },
+    {
+      "item_code": "3505",
+      "name": "锡兰红茶",
+      "category": "饮品",
+      "price_cents": 1250,
+      "tags": [
+        "match:exact"
+      ],
+      "nutrition": {
+        "energy_kcal": 2,
+        "protein_g": 0,
+        "fat_g": 0,
+        "carb_g": 0,
+        "sodium_mg": 0,
+        "calcium_mg": 5
+      }
+    },
+    {
+      "item_code": "1600",
+      "name": "麦香鱼",
+      "category": "巨无霸牛鱼肉堡",
+      "price_cents": 2500,
+      "tags": [
+        "match:exact"
+      ],
+      "nutrition": {
+        "energy_kcal": 325,
+        "protein_g": 16,
+        "fat_g": 13,
+        "carb_g": 35,
+        "sodium_mg": 556,
+        "calcium_mg": 99
+      }
+    },
+    {
+      "item_code": "1401",
+      "name": "麦乐鸡",
+      "category": "炸鸡",
+      "price_cents": 1550,
+      "tags": [],
+      "nutrition": {
+        "energy_kcal": null,
+        "protein_g": null,
+        "fat_g": null,
+        "carb_g": null,
+        "sodium_mg": null,
+        "calcium_mg": null
+      }
+    },
+    {
+      "item_code": "507411",
+      "name": "麦咖啡™美式",
+      "category": "麦咖啡™",
+      "price_cents": 2300,
+      "tags": [],
+      "nutrition": {
+        "energy_kcal": null,
+        "protein_g": null,
+        "fat_g": null,
+        "carb_g": null,
+        "sodium_mg": null,
+        "calcium_mg": null
+      }
+    },
+    {
+      "item_code": "9900005430",
+      "name": "芝士安格斯厚牛堡三件套",
+      "category": "安格斯MAX厚牛堡",
+      "price_cents": 6050,
+      "tags": [],
+      "nutrition": {
+        "energy_kcal": null,
+        "protein_g": null,
+        "fat_g": null,
+        "carb_g": null,
+        "sodium_mg": null,
+        "calcium_mg": null
+      }
+    },
+    {
+      "item_code": "4437",
+      "name": "玉米杯",
+      "category": "小食甜品/其他",
+      "price_cents": 1450,
+      "tags": [],
+      "nutrition": {
+        "energy_kcal": null,
+        "protein_g": null,
+        "fat_g": null,
+        "carb_g": null,
+        "sodium_mg": null,
+        "calcium_mg": null
+      }
+    },
+    {
+      "item_code": "1406",
+      "name": "板烧鸡腿堡",
+      "category": "鸡肉汉堡/卷",
+      "price_cents": 2700,
+      "tags": [
+        "match:exact"
+      ],
+      "nutrition": {
+        "energy_kcal": 391,
+        "protein_g": 23,
+        "fat_g": 17,
+        "carb_g": 35,
+        "sodium_mg": 1041,
+        "calcium_mg": 93
+      }
+    },
+    {
+      "item_code": "9900005432",
+      "name": "麦麦脆汁鸡1块",
+      "category": "炸鸡",
+      "price_cents": 1600,
+      "tags": [],
+      "nutrition": {
+        "energy_kcal": null,
+        "protein_g": null,
+        "fat_g": null,
+        "carb_g": null,
+        "sodium_mg": null,
+        "calcium_mg": null
+      }
+    },
+    {
+      "item_code": "515946",
+      "name": "浓浓黑巧（冰/热）",
+      "category": "麦咖啡™",
+      "price_cents": 2500,
+      "tags": [],
+      "nutrition": {
+        "energy_kcal": null,
+        "protein_g": null,
+        "fat_g": null,
+        "carb_g": null,
+        "sodium_mg": null,
+        "calcium_mg": null
+      }
+    }
+  ]
+}

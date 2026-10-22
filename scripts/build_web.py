@@ -51,6 +51,9 @@ def load_items(path: Path) -> tuple[list[MenuItem], dict]:
         "collected_at": payload.get("collected_at", ""),
         "store": payload.get("store", {}),
         "count": len(items),
+        # 菜单项数与会营养数据的项数往往不同（套餐、规格歧义项无法可靠匹配），
+        # 把两个数字都带到页面上，避免读者把「样本少」误解成「数据缺失」。
+        "quality": payload.get("quality", {}),
     }
     return items, meta
 

@@ -391,11 +391,20 @@ function initMeta() {
   const store = m.store || {};
   const src = document.getElementById("sourceLine");
   const where = [store.city, store.code ? "门店 " + store.code : ""].filter(Boolean).join(" · ");
+  const q = m.quality || {};
+  const cov = q.nutrition_coverage || {};
+  const totalItems = q.items_total || m.count;
+  let coverage = "";
+  if (cov.with_energy != null && totalItems && cov.with_energy < totalItems) {
+    coverage = " · 菜单 " + totalItems + " 项中 " + cov.with_energy + " 项匹配到营养"
+      + "（套餐与规格歧义项不匹配，避免用单品营养冒充套餐）";
+  }
   src.innerHTML = "<b>数据来源</b> " + (m.data_source === "sample"
     ? "公开报道中的麦当劳中国官方 MCP 实测样本"
     : "麦当劳中国官方 MCP（mcp.mcd.cn）")
     + (where ? " · " + esc(where) : "")
-    + (m.collected_at ? " · 采集于 " + esc(m.collected_at) : "");
+    + (m.collected_at ? " · 采集于 " + esc(m.collected_at) : "")
+    + esc(coverage);
 
   if (m.data_source === "sample") {
     const n = document.getElementById("notice");
