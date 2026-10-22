@@ -37,7 +37,7 @@ python3 scripts/build_web.py --data data/menu.json
 open docs/index.html
 ```
 
-产出的 `web/index.html` 是**单文件应用**：数据、样式、脚本全部内联，没有外部请求，可以直接双击打开、丢进任意静态托管、或者发链接给别人。图表是手写 SVG，不依赖任何图表库。
+产出的 `docs/index.html` 是**单文件应用**：数据、样式、脚本全部内联，没有外部请求，可以直接双击打开、丢进任意静态托管、或者发链接给别人。图表是手写 SVG，不依赖任何图表库。
 
 跑测试：
 
@@ -80,7 +80,7 @@ mcpareto/
 ├── web/template.html    # 页面模板（手写 SVG，无图表库）
 ├── docs/index.html      # 构建产物，单文件应用，可直接由 GitHub Pages 托管
 ├── data/sample_menu.json# 演示样本，13 项
-└── tests/test_pareto.py # 20 个单元测试
+└── tests/               # 112 个单元测试（pareto / normalize / mcp_client）
 ```
 
 ## 数据来源与诚实声明

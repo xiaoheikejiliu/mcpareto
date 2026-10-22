@@ -36,22 +36,26 @@ class MenuItem:
     """一个可比较的餐品。
 
     price_cents 用「分」存整数，避免浮点误差 —— 麦当劳 `calculate-price`
-    返回的就是分，直接对齐可以做到分毫不差。
+    返回的就是分，直接对齐可以做到分毫不差。取不到价格时是 None，**不是 0**：
+    0 是合法价格，用它当哨兵会让缺价餐品以「免费」身份支配整张菜单。
     """
 
     item_code: str
     name: str
     category: str
-    price_cents: int
+    price_cents: int | None
     nutrition: Nutrition
     tags: list[str] = field(default_factory=list)
 
     @property
-    def price_yuan(self) -> float:
+    def price_yuan(self) -> float | None:
+        if self.price_cents is None:
+            return None
         return self.price_cents / 100.0
 
     def __repr__(self) -> str:  # pragma: no cover - 调试用
-        return f"<MenuItem {self.name} ¥{self.price_yuan:.2f}>"
+        price = "价格缺失" if self.price_cents is None else f"¥{self.price_cents / 100:.2f}"
+        return f"<MenuItem {self.name} {price}>"
 
 
 @dataclass(frozen=True)
@@ -74,9 +78,21 @@ class Metric:
 
 def _per_yuan(n: float | None, item: MenuItem) -> float | None:
     """把绝对营养量折算成「每元获得量」。价格必须为正。"""
-    if n is None or item.price_cents <= 0:
+    if n is None or item.price_cents is None or item.price_cents <= 0:
         return None
-    return n / item.price_yuan
+    return n / (item.price_cents / 100.0)
+
+
+def _price(item: MenuItem) -> float | None:
+    """价格轴。
+
+    缺失或非正都必须返回 None：价格是「越小越好」的轴，若把缺价当 0，缺价餐品
+    会在所有视角里以「免费且给得最多」的姿态支配全表，把正常餐品的可省金额
+    算成原价 —— 这是最安静也最致命的一种数据错误。
+    """
+    if item.price_cents is None or item.price_cents <= 0:
+        return None
+    return item.price_cents / 100.0
 
 
 METRICS: dict[str, Metric] = {
@@ -85,7 +101,7 @@ METRICS: dict[str, Metric] = {
         label="价格",
         unit="元",
         direction=Direction.MIN,
-        getter=lambda i: i.price_yuan,
+        getter=_price,
     ),
     "kcal_per_yuan": Metric(
         key="kcal_per_yuan",

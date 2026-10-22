@@ -208,6 +208,15 @@ function fmt(v, unit) {
   return n + (unit || "");
 }
 
+// 餐品名、门店名、样本备注都来自 MCP（商户可配置）或用户自备的 JSON，属半可信
+// 输入。凡是拼进 innerHTML 的动态字符串都必须先过 esc()：否则名称里夹带的
+// img 标签 + onerror 处理函数会被浏览器真的当成元素执行。
+function esc(value) {
+  return String(value == null ? "" : value).replace(/[&<>"']/g, c => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+  })[c]);
+}
+
 function renderTabs() {
   const box = document.getElementById("tabs");
   box.innerHTML = "";
@@ -217,7 +226,10 @@ function renderTabs() {
     b.className = "tab";
     b.setAttribute("role", "tab");
     b.setAttribute("aria-selected", key === current ? "true" : "false");
-    b.innerHTML = p.name + "<small>" + p.y.label + " 对 价格</small>";
+    b.textContent = p.name;
+    const sub = document.createElement("small");
+    sub.textContent = p.y.label + " 对 价格";
+    b.appendChild(sub);
     b.onclick = () => { current = key; render(); };
     box.appendChild(b);
   }
@@ -304,12 +316,12 @@ function renderChart(p) {
 function showDetail(p, d) {
   const box = document.getElementById("detail");
   const beaters = (p.beaters[d.code] || []);
-  let html = "<h3>" + d.name + "</h3>";
+  let html = "<h3>" + esc(d.name) + "</h3>";
   html += '<div class="kv">'
-    + "<span>价格 <b>¥" + d.price + "</b></span>"
-    + "<span>" + p.y.label + " <b>" + fmt(d.y, p.y.unit) + "</b></span>"
-    + (d.protein != null ? "<span>蛋白质 <b>" + d.protein + " g</b></span>" : "")
-    + (d.sodium != null ? "<span>钠 <b>" + d.sodium + " mg</b></span>" : "")
+    + "<span>价格 <b>¥" + esc(d.price) + "</b></span>"
+    + "<span>" + esc(p.y.label) + " <b>" + fmt(d.y, p.y.unit) + "</b></span>"
+    + (d.protein != null ? "<span>蛋白质 <b>" + esc(d.protein) + " g</b></span>" : "")
+    + (d.sodium != null ? "<span>钠 <b>" + esc(d.sodium) + " mg</b></span>" : "")
     + "</div>";
 
   if (d.isFront) {
@@ -318,8 +330,8 @@ function showDetail(p, d) {
     html += '<p style="color:var(--mid);margin-bottom:6px">碾压它的选项：</p>';
     for (const b of beaters) {
       const diff = d.price - b.price;
-      html += '<div class="beater"><span>' + b.name + '</span><span>'
-        + (diff > 0 ? "便宜 ¥" + diff.toFixed(2) : "同价") + "，同项不低</span></div>";
+      html += '<div class="beater"><span>' + esc(b.name) + '</span><span>'
+        + (diff > 0 ? "便宜 ¥" + esc(diff.toFixed(2)) : "同价") + "，同项不低</span></div>";
     }
   }
   box.innerHTML = html;
@@ -342,13 +354,13 @@ function renderTable(p) {
 
   for (const { d, best, save } of lose) {
     const tr = document.createElement("tr");
-    tr.innerHTML = "<td class='name'>" + d.name
-      + "<span class='who'>" + d.cat + "</span></td>"
-      + "<td class='num'>¥" + d.price.toFixed(2) + "</td>"
-      + "<td class='name'>" + (best ? best.name : "—")
-      + "<span class='who'>" + (best ? "¥" + best.price.toFixed(2) : "") + "</span></td>"
+    tr.innerHTML = "<td class='name'>" + esc(d.name)
+      + "<span class='who'>" + esc(d.cat) + "</span></td>"
+      + "<td class='num'>¥" + esc(d.price.toFixed(2)) + "</td>"
+      + "<td class='name'>" + (best ? esc(best.name) : "—")
+      + "<span class='who'>" + (best ? "¥" + esc(best.price.toFixed(2)) : "") + "</span></td>"
       + "<td class='num'>" + (save > 0.004
-        ? "<span class='pill'>省 " + save.toFixed(2) + "</span>"
+        ? "<span class='pill'>省 " + esc(save.toFixed(2)) + "</span>"
         : "同价") + "</td>";
     tr.onclick = () => showDetail(p, d);
     rows.appendChild(tr);
@@ -382,14 +394,14 @@ function initMeta() {
   src.innerHTML = "<b>数据来源</b> " + (m.data_source === "sample"
     ? "公开报道中的麦当劳中国官方 MCP 实测样本"
     : "麦当劳中国官方 MCP（mcp.mcd.cn）")
-    + (where ? " · " + where : "")
-    + (m.collected_at ? " · 采集于 " + m.collected_at : "");
+    + (where ? " · " + esc(where) : "")
+    + (m.collected_at ? " · 采集于 " + esc(m.collected_at) : "");
 
   if (m.data_source === "sample") {
     const n = document.getElementById("notice");
     n.hidden = false;
-    n.innerHTML = "<b>当前是演示样本，共 " + m.count + " 项。</b>"
-      + (m.sample_note || "")
+    n.innerHTML = "<b>当前是演示样本，共 " + esc(m.count) + " 项。</b>"
+      + esc(m.sample_note)
       + " 页面上的全部计算均由本项目自身的帕累托引擎完成。";
   }
 }

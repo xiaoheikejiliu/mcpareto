@@ -113,13 +113,36 @@ class TestComputeFront(unittest.TestCase):
         self.assertEqual(result.ranks["次优"], 2)
         self.assertEqual(result.ranks["最差"], 3)
 
-    def test_dominators_are_collected(self):
+    def test_dominators_are_first_layer_only(self):
+        """审查 S-8：推荐替代品必须来自第一层前沿。
+
+        乙 虽然也支配 丙，但它自己是被 甲 支配的劣解。旧实现把 乙 一起放进来，
+        页面可能推荐「换成一个同样被支配的选项」，用户照做只是从一个劣解
+        跳到另一个劣解。
+        """
         a = make("甲", 10.0, 600, 30)
         b = make("乙", 15.0, 550, 28)
         c = make("丙", 30.0, 400, 12)
         result = compute_front([a, b, c], AXES)
+        self.assertEqual(result.ranks["乙"], 2)
         names = {i.name for i in result.dominators["丙"]}
-        self.assertEqual(names, {"甲", "乙"})
+        self.assertEqual(names, {"甲"})
+
+    def test_every_dominator_is_on_the_front(self):
+        """任意数据集里，dominators 出现的每个 code 必须 ranks == 1。"""
+        items = [
+            make("A", 5.0, 900, 40),
+            make("B", 10.0, 500, 20),
+            make("C", 20.0, 300, 10),
+            make("D", 8.0, 700, 30),
+            make("E", 30.0, 200, 5),
+        ]
+        result = compute_front(items, AXES)
+        codes = {i.item_code for i in result.front}
+        for code, beaters in result.dominators.items():
+            for beater in beaters:
+                self.assertIn(beater.item_code, codes)
+                self.assertEqual(result.ranks[beater.item_code], 1)
 
     def test_kcal_axis_treats_more_as_better(self):
         """「吃饱优先」下热量是收益，便宜的低热量单品不得支配贵的高热量餐品。

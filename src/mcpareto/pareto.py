@@ -108,29 +108,53 @@ def compute_front(
     ranks: dict[str, int] = {}
     dominators: dict[str, list[MenuItem]] = {}
 
+    # 第一遍：判定谁在前沿上。支配关系只看得到「有没有人比我强」，
+    # 不看谁最终被拿来当推荐替代品。
+    front_pairs: list[tuple[MenuItem, tuple[float, ...]]] = []
+    dominated_pairs: list[tuple[MenuItem, tuple[float, ...]]] = []
     for item, vec in projected:
         beaters = [other for other, ovec in projected if other is not item and dominates(ovec, vec)]
         # 数据完全相同的餐品互不支配，它们会一起留在前沿上，这是正确行为。
         if beaters:
-            dominated.append(item)
-            dominators[item.item_code] = beaters
+            dominated_pairs.append((item, vec))
         else:
             front.append(item)
+            front_pairs.append((item, vec))
             ranks[item.item_code] = 1
+    dominated = [item for item, _ in dominated_pairs]
+
+    # 第二遍：只在前沿里找「碾压者」。
+    #
+    # 首页那句「换掉它」必须指向一个自己没有被支配的选项 —— 若从全部已投影项里
+    # 挑，推荐的可能是个第 2、3 层的劣解，用户照着换只是从一个劣解跳到另一个劣解，
+    # 产品的核心承诺当场失效。支配关系有传递性，所以每个劣解一定能在前沿里
+    # 找到至少一个支配者；front 通常远小于 n，这一遍比第一遍快得多。
+    for item, vec in dominated_pairs:
+        beaters = [other for other, ovec in front_pairs if other is not item and dominates(ovec, vec)]
+        if not beaters:  # 防御性兜底：浮点容差下理论不会发生，宁可给全集也不要给空
+            beaters = [
+                other for other, ovec in projected if other is not item and dominates(ovec, vec)
+            ]
+        dominators[item.item_code] = beaters
 
     # 分层：逐层剥离第一层，得到第 2、3… 层，用于回答「如果最优的都不想要，
     # 次优是谁」。层数在实践中很少超过 6，直接迭代即可。
     remaining = list(dominated)
     layer = 2
     while remaining:
-        vecs = {i.item_code: to_max_vector(i, axes) for i in remaining}
+        vecs = {i.item_code: v for i in remaining if (v := to_max_vector(i, axes)) is not None}
         current_layer: list[MenuItem] = []
         rest: list[MenuItem] = []
         for item in remaining:
-            vec = vecs[item.item_code]
-            assert vec is not None
+            vec = vecs.get(item.item_code)
+            if vec is None:
+                # 防御：remaining 全部来自已成功投影的集合，这里理论上不会命中。
+                # 用显式 skip 而不是 assert —— assert 会被 python -O 整段剥掉。
+                continue
             beaten_by_remaining = any(
-                other is not item and dominates(vecs[other.item_code], vec)  # type: ignore[arg-type]
+                other is not item
+                and (ovec := vecs.get(other.item_code)) is not None
+                and dominates(ovec, vec)
                 for other in remaining
             )
             if beaten_by_remaining:
