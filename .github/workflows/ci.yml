@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Python ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.12"]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      # 本项目零第三方依赖，因此刻意不安装任何包：CI 与用户本地环境保持一致。
+      - name: Run unit tests
+        run: python -m unittest discover -s tests -v
+
+      - name: Build page from sample data
+        run: python scripts/build_web.py --data data/sample_menu.json --out /tmp/index.html
+
+      # 只看退出码不够：确认产物非空，且数据确实被注入进去了。
+      - name: Verify build artifact
+        run: |
+          test -s /tmp/index.html
+          grep -q 'MC-BIGMAC' /tmp/index.html
+          echo "产物 /tmp/index.html 大小 $(wc -c < /tmp/index.html) 字节，已包含 MC-BIGMAC"

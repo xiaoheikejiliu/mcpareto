@@ -120,10 +120,30 @@ def build_payload(items: list[MenuItem], meta: dict) -> dict:
     return {"meta": meta, "perspectives": perspectives}
 
 
+# 数据会被原样内联进 web/template.html 的 <script> 块，而餐品名称等字段来自 MCP 外部数据，
+# 不能当作可信内容：名称里一旦出现 "</script>"，浏览器会提前闭合脚本标签、页面直接损坏；
+# 出现 "<!--" 会进入 HTML 注释状态；U+2028 / U+2029 在部分 JS 引擎里是非法换行符，会让脚本语法报错。
+# 换成 \uXXXX 转义序列后，JS 解析出来的仍是原字符，但不会被当成 HTML 结构。
+_SCRIPT_UNSAFE = {
+    "<": "\\u003c",
+    ">": "\\u003e",
+    "&": "\\u0026",
+    "\u2028": "\\u2028",
+    "\u2029": "\\u2029",
+}
+
+
+def escape_for_script(data: str) -> str:
+    """把 JSON 文本中会破坏 <script> 结构的字符替换成等价转义序列。"""
+    for char, escape in _SCRIPT_UNSAFE.items():
+        data = data.replace(char, escape)
+    return data
+
+
 def render(payload: dict) -> str:
     template = (ROOT / "web" / "template.html").read_text(encoding="utf-8")
     data = json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
-    return template.replace("/*__PAYLOAD__*/null", data)
+    return template.replace("/*__PAYLOAD__*/null", escape_for_script(data))
 
 
 def main() -> int:
