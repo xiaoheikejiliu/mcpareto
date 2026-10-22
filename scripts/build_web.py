@@ -129,7 +129,8 @@ def render(payload: dict) -> str:
 def main() -> int:
     parser = argparse.ArgumentParser(description="编译自包含 HTML 应用")
     parser.add_argument("--data", default="data/menu.json")
-    parser.add_argument("--out", default="web/index.html")
+    # 产物落在 docs/，便于直接用 GitHub Pages（只接受 / 或 /docs）发布成在线链接
+    parser.add_argument("--out", default="docs/index.html")
     args = parser.parse_args()
 
     data_path = Path(args.data)

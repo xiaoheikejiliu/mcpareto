@@ -26,13 +26,13 @@
 ```bash
 # 1. 先看效果（用仓库内的演示样本）
 python3 scripts/build_web.py
-open web/index.html
+open docs/index.html
 
 # 2. 换成你所在门店的真实数据
 export MCD_MCP_TOKEN="在 open.mcd.cn/mcp 控制台领取"
 python3 scripts/collect.py --address "深圳北站" --out data/menu.json
 python3 scripts/build_web.py --data data/menu.json
-open web/index.html
+open docs/index.html
 ```
 
 产出的 `web/index.html` 是**单文件应用**：数据、样式、脚本全部内联，没有外部请求，可以直接双击打开、丢进任意静态托管、或者发链接给别人。图表是手写 SVG，不依赖任何图表库。
@@ -76,6 +76,7 @@ mcpareto/
 │   ├── collect.py       # 从 MCP 采集真实菜单、营养、实付价
 │   └── build_web.py     # 计算并编译成单文件 HTML
 ├── web/template.html    # 页面模板（手写 SVG，无图表库）
+├── docs/index.html      # 构建产物，单文件应用，可直接由 GitHub Pages 托管
 ├── data/sample_menu.json# 演示样本，13 项
 └── tests/test_pareto.py # 20 个单元测试
 ```
